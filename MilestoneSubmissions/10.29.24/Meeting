@@ -1,16 +1,32 @@
 # 10.29.24 Meeting Overview
 
 # Meeting Attendees:
-Screenshot of attendees attatched.
+Screenshot of attendees attatched. 
+(MS TEAMS) Time: 1:57pm
+Hunter
 Alyssa
+Connor
+Agam
+Abhi
 
 
 # Discussion Key Points: 
 - Revolved around completing the Lab 9 deliverables, setting up proper communication channels which will be fascillitated through Microsoft Teams.
-- Completed the wireframe, and determined our development methodlogy going forward, including division of work.
-- 
+- Completed the wireframe, and determined our development methodology going forward, using AGILE through github's Project Management GUI.
+- Get Docker figured out, several issues with containers
+- Get started on AGILE format, development methodology through github, understanding where to get what we need done, submitting bugs, stories, and release notes as a team.
+- Determined what we are getting done this week:
+    - Login, Logout, Registration, Homepage
+    - Get Started on APIs
 
 # Goals for Next Meeting:
--
+- Have the previous deliverables completed.
+- Get Login, Logout, Registration, Homepage
+    - If possible, some CSS color schemes started
+- Commit our 3 required commits.
+- Reach out if we get stuck!
 
 # Additional Notes:
+- Get Docker figured out ASAP
+- Look into three.js and what required APIs we need to do
+- WebGL
