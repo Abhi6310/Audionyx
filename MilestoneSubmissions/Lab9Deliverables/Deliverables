@@ -1,0 +1,46 @@
+# Lab 9 Deliverables 10.24.24
+Two additional files attatched.
+  
+# Team Number: 014-5 
+# Team Name: Future Dropouts
+
+
+# Team Members: 
+First, Last		     Email		     Github Usernames		
+Alyssa Webb		 alwe1021@colorado.edu		Alyssa-Webb
+Hunter Froemming     	 hufr2070@colorado.edu          HunterFroemming
+Connor Scott		 cosc5789@colorado.edu		cosc5789
+Abhi Chalise		 abch4744@colorado.edu		Abhi6310
+Agam Singh		 agsi1185@colorado.edu		agsi1185
+
+
+# Application Name: Audionyx
+
+
+# Application Description:
+    Our application is a web-based audio visualizer that is built using three.js. Offering users the ability to experience their music through visuals, the core functionality of our application transforms audio files into dynamic 3D visuals that react to the music. By leveraging three.js and WebGL, the application creates real-time animations which are interactive and offer an immersive experience.
+	
+    To add to the visual experience, the application allows users to create their own accounts where they can upload and store their own music. Each account links users to their own songs which lets them manage and replay their music within the visualizer. This added functionality adds a personalization element to the application by giving users full control over their audio collection which greatly increases the value of our application.
+
+
+# Vision Statement:
+For audio enthusiasts who seek to experience sound in a visually captivating way, Audionyx is a 3D audio visualization application that aims to immerse you in a new experience of music, visuals, and vibes.
+
+# Version Control: 
+Link to Github Repository: https://github.com/Alyssa-Webb/ProjectRepository
+
+# Development Methodology: 
+We will be using the Agile Methodology to guide our project. We will use scrum to guide our meetings and progress on the project. Work on the website first, and then we will work on the user side of things. At the end, we can focus on security for extra credit. 
+
+# Communication Plan:
+Consistently communicate through Discord or MS Teams? TBD
+Meetings will be every week on Tuesdays at 2:00pm to 2:25pm via Zoom. 
+
+# Meeting Plan:
+Weekly TA meeting: Tuesdays at 2:30pm via Zoom
+
+# Use Case Diagram
+See attatched image.
+
+# Wireframes
+See attatched image.
