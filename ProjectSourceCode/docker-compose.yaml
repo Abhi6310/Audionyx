@@ -6,8 +6,8 @@ services:
     expose:
       - '5432'
     volumes:
-      - group-project:/var/lib/postgresql/data
-      - ./src/init_data:/docker-entrypoint-initdb.d
+      - ProjectRepository:/var/lib/postgresql/data
+      - ./init_data:/docker-entrypoint-initdb.d
   web:
     image: node:lts
     user: 'node'
@@ -20,7 +20,7 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - ./:/repository
+      - ./:/home/node/app
     command: 'npm start'
 volumes:
-  group-project:
+  ProjectRepository:
