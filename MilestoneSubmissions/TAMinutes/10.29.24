@@ -1,0 +1,14 @@
+# TA Meeting 10.29.24 at 2:30pm
+
+# Key Points
+
+- We discussed potential obstacles when obtaining audio files from SoundCloud, YouTube, Spotify, etc. 
+As we would need to convert these files, so determining alternative methods, or scrapping as a whole if 
+we are unable to access a public API key.
+
+- We also discussed our approach to front end, our website was not currently working due to Docker issues, 
+but our approach thus far is to use Bootstrap, and go from there as we are unsure how we want the GUI to 
+look yet as we get to understanding three.js and how the libraries work together.
+
+- Some points of reference were to make sure we also submit what we completed each week and what each member
+committed/completed throughout the week.
