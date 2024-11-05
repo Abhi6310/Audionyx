@@ -1,0 +1,18 @@
+# TA Meeting 11.07.24 at 2:30pm
+
+# Key Points
+- Started with Connor showing the mp3 converter (for spotify and youtube)
+- Next, Abhi went over his threejs visualization
+- Then Alyssa went of hers, Hunter, and Agam's contributions regarding register,login,library, and database
+- Tips: 
+    - Start updating project more as we progress
+    - Distribute the commits to three different days.
+- Need separate file for release notes, or put in project notes.
+
+- Plan for upcoming week:
+    - (Connor) Integrate library with MP3 converter, uploading
+    - (Abhi) Visualizer working now, we want to integrate it with the API that Connor worked on, so getting that
+    audio to display on the website
+    - (Hunter) Registration and Login CSS styliziation
+    - (Alyssa) Library stylization, integrate MP3 converter with the upload and delete
+    - Making sure we are updating our project planner (release notes, what we have done)
