@@ -2,18 +2,39 @@
 
 # Meeting Attendees:
 Screenshot of attendees attatched.
+Alyssa
+Hunter
+Abhi
+Connor
+
+* Agam was absent, but excused due to exam.
 
 # What was accomplished this past week:
-
+ - Login page
+ - Register page
+ - Library page
+ - API keys
+ - for spotify and youtube for conversion to MP3
+ - threejs research
+ - database setup, for users, projects, and library
+ 
 
 # Who did what?
-
+Alyssa - Library page
+Agam - Database setup, create table
+Connor - Spotify and Youtube MP3 converter, API keys
+Abhi - Threejs, basic visualizer, link to API
+Hunter - Login and Register Page
 
 # Discussion Key Points: 
-- 
+- Difficulty linking database to registration and homepage
+- Need to start ground up on some aspects as things were not working together properply
 
 
 # Goals for Next Meeting:
--
+- Have Registration and Login fully working, stylized
+- Stylize library accordingly, ensure removing and uploading files is possible
+- Get started on implementing the Home (visualizer) page
+
 
 # Additional Notes:
