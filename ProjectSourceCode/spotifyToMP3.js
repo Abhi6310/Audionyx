@@ -18,8 +18,8 @@ const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fet
 
 //Spotify API ID's
 const spotifyApi = new SpotifyWebApi({
-    clientId: 'c86dd225cff243e0a8e38855ea04db87',
-    clientSecret: '2d756f6f683c4152b54eb560c16d1aa1'
+    clientId: '2ebf735cd56a46189a2558fe30c1733e',
+    clientSecret: '460c2c3aaacc4e6cb737563dbc27d053'
 });
 
 //Spotify to MP3 endpoint
