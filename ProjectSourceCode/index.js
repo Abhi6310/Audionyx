@@ -10,7 +10,6 @@ const pgp = require('pg-promise')();
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
-const axios = require('axios');
 
 // *****************************************************
 // <!-- Connect to DB -->
@@ -64,17 +63,24 @@ app.use(session({
 // <!-- API Routes -->
 // *****************************************************
 
+
 app.get('/', (req, res) => {
   res.redirect('/login');
 });
 
-// Get info from user table
+// Get info from Users table
 app.get('/all', (req, res) => {
-  const all = 'SELECT * FROM users;';
+  // Query to select all users, including their associated library_id
+  const allUsersQuery = `
+    SELECT username, email, created_at, library_id 
+    FROM Users;
+  `;
+  
   db.task('get-everything', task => {
-    return task.batch([task.any(all)]);
+    return task.batch([task.any(allUsersQuery)]);
   })
   .then(data => {
+    // Send back the data as a JSON response
     res.status(200).json({ data: data[0] });
   })
   .catch(err => {
@@ -85,49 +91,91 @@ app.get('/all', (req, res) => {
 });
 
 // REGISTER
+const user = {
+  username: undefined,
+  password: undefined,
+};
+
 app.get('/register', (req, res) => {
-  res.render('pages/register', { error: false, message: undefined });
+  if (req.session.user) {
+    res.render('pages/register', {
+      error: true,
+      message: undefined
+    });
+  } else {
+    res.render('pages/register');
+  }
 });
 
 app.post('/register', async (req, res) => {
   const username = req.body.username;
   const hash_pass = await bcrypt.hash(req.body.password, 10);
   const query = 'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;';
-  
-  db.any(query, [username, hash_pass])
-    .then(() => {
-      res.render('pages/login', { message: 'Account successfully registered!' });
-    })
-    .catch(err => {
-      console.log(err);
-      res.render('pages/register', { error: true, message: "Uh oh! Something went wrong, your user was invalid or already registered!" });
+  db.any(query, [
+    username,
+    hash_pass
+  ])
+  .then(data => {
+    res.render('pages/login', {
+      message: 'Account successfully registered!'
     });
+  })
+  .catch(err => {
+    console.log(err);
+    res.render('pages/register', {
+      error: true,
+      message: "Uh oh! Something went wrong, your user was invalid or already registered!"
+    });
+  });
 });
 
 // LOGIN
 app.get('/login', (req, res) => {
-  res.render('pages/login', { message: undefined });
+  if (req.session.user) {
+    res.render('pages/login', {
+      error: true,
+      message: undefined
+    });
+  } else {
+    res.render('pages/login', {
+      message: undefined,
+    });
+  }
 });
 
 app.post('/login', (req, res) => {
   const username = req.body.username;
   const query = 'SELECT * FROM users WHERE users.username = $1 LIMIT 1';
-  
-  db.one(query, [username])
+  const values = [username];
+
+  db.one(query, values)
     .then(async data => {
-      const match = await bcrypt.compare(req.body.password, data.password);
+      user.username = data.username;
+      user.password = data.password;
+      const match = await bcrypt.compare(req.body.password, user.password);
+
       if (match) {
-        req.session.user = { username: data.username };
-        res.redirect('/mylibrary'); // Redirect to mylibrary after login
+        req.session.user = user;
+        req.session.save();
+
+        res.redirect('/mylibrary');
+
       } else {
-        res.render('pages/login', { error: true, message: "Incorrect password." });
+        res.render('pages/login', {
+          error: true,
+          message: "Incorrect password."
+        });
       }
     })
     .catch(err => {
       console.log(err);
-      res.render('pages/login', { error: true, message: "No username found, register to make an account." });
+      res.render('pages/register', {
+        error: true,
+        message: "No username found, register to make an account."
+      });
     });
 });
+
 
 // Authentication Middleware
 const auth = (req, res, next) => {
@@ -135,47 +183,52 @@ const auth = (req, res, next) => {
     return res.redirect('/login');
   }
   next();
-};
+}
 
 // Requires authentication for certain routes
 app.use(auth);
 
-// My Library
-app.get('/mylibrary', (req, res) => {
-  axios({
-      url: `https://app.ticketmaster.com/discovery/v2/events.json`,
-      method: 'GET',
-      params: {
-          apikey: process.env.API_KEY,
-          keyword: 'Taylor',
-          size: 10
-      },
-  })
-  .then(results => {
-      res.render('pages/mylibrary', { results: results.data._embedded.events }); // Render the mylibrary page
-  })
-  .catch(error => {
-      res.status(401).json({
-          error: true,
-          message: 'API Call Failure!',
-          results: '',
-      });
-  });
+// Home - Render home page if authenticated
+app.get('/home', (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');  // Redirect to login if user is not authenticated
+  }
+  res.render('pages/home', { title: 'Visualizer Home', username: req.session.user.username });
 });
+
+//home to my library
+app.get('/home', (req, res) => {
+  res.redirect('/mylibrary');  // Redirect to My Library if authenticated
+});
+
+// My Library - Render mylibrary page if authenticated
+app.get('/mylibrary', (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');  // Redirect to login if user is not authenticated
+  }
+  res.render('pages/mylibrary', { title: 'My Library', username: req.session.user.username });
+});
+
+
+
 
 // Logout
 app.get('/logout', (req, res) => {
+  res.redirect('/login'); // Redirect to login if accessed via GET
+});
+
+app.post('/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
       console.log(err);
-      return res.redirect('/mylibrary'); // Redirect to mylibrary on error
+      return res.redirect('/home'); 
     }
-    res.redirect('/login');
+      res.redirect('/login');
   });
 });
 
 // *****************************************************
-// <!-- Start Server-->
+// <!-- Start Server -->
 // *****************************************************
 app.listen(3000, () => {
   console.log('Server is listening on port 3000');
