@@ -1,0 +1,60 @@
+<div class="container">
+  <!-- Upload Section -->
+  <div class="mt-5">
+    <div class="upload-section">
+      <h3>My Library</h3>
+      
+      <!-- Conversion Form -->
+      <h5>Add to library</h5>
+      <form action="/convert" method="post" enctype="multipart/form-data">
+        <!-- Dropdown to select source -->
+        <label for="source">Select Source:</label>
+        <select id="source" name="source" required>
+          <option value="" disabled selected>Select Source</option>
+          <option value="youtube">YouTube</option>
+          <option value="spotify">Spotify</option>
+          <option value="local">Local MP3 File</option> <!-- Option to upload locally -->
+        </select>
+
+        <!-- URL input based on source selected -->
+        <label for="url">Enter URL:</label>
+        <input type="text" id="url" name="url" placeholder="Enter the URL" required>
+
+        <!-- File input for uploading local MP3 file -->
+        <label for="file">Upload MP3 File:</label>
+        <input type="file" id="file" name="file" accept=".mp3" required style="display: none;"> <!-- Hide by default -->
+
+        <button type="submit" class="btn btn-primary">Convert & Add</button>
+      </form>
+    </div>
+
+    <!-- Music Library Table -->
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Genre</th>
+          <th>File Type</th>
+          <th>Play/Remove</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each results}}
+        <tr>
+          <td>{{this.title}}</td>
+          <td>{{this.genre}}</td>
+          <td>{{this.filetype}}</td>
+          <td>
+            <!-- Play Button -->
+            <button class="btn btn-success btn-sm" onclick="playSong('{{this.fileUrl}}')">Play</button>
+            <!-- Delete Button -->
+            <form action="/delete/{{this.id}}" method="post" style="display:inline-block;">
+              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
