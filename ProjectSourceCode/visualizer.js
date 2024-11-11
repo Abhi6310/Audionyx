@@ -5,6 +5,21 @@ let noise = new SimplexNoise(); //Simplex noise used for animating warping effec
 const area = document.getElementById("visualiser");
 const label = document.getElementById("label");
 
+//Decodes the base64 for the visualizer
+function decodeAudioFromBase64(base64Input){
+  //decode the original string to binary
+  const binaryAudio = atob(base64Input);
+  const len = binaryAudio.length;
+  //makes a typed array that stores the binary data
+  const bytes = new Uint8Array(len);
+  //converting binary string into an array of bytes
+  for (let i = 0; i < len; i++) {
+      bytes[i] = binaryAudio.charCodeAt(i);
+  }
+  //next add: adding the audio to the web audio api and 
+  //setting up the async operation for initializing the visualizer
+}
+
 //Detecting for audio file selection to test
 audioInput.addEventListener("change", setAudio, false);
 let audio = new Audio();
