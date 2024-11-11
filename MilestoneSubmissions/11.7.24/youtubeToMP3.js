@@ -44,7 +44,14 @@ app.get('/convertVideo', async (req, res) =>
         .on('start', commandLine => console.log('FFmpeg command:', commandLine))//Logs ffmpeg
         .on('progress', progress => console.log('Processing:', progress))//Logs details
         .on('stderr', stderrLine => console.log('Stderr output:', stderrLine))//Logs when its over
-        .on('end', () => console.log('MP3 conversion finished'))
+        .on('data', (chunk) => audioChunks.push(chunk)) //Store each chunk of audio data in array
+        .on('end', () => 
+            { //After converting, encode and send data as Base64
+            const audioBuffer = Buffer.concat(audioChunks);
+            const base64Audio = audioBuffer.toString('base64');
+            res.json({audio: base64Audio});
+            console.log('MP3 conversion finished and sent as Base64');
+        })
         .on('error', (err) => //Error
         {
             console.error('Error during MP3 conversion:', err);
