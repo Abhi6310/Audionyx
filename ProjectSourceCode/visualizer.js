@@ -6,24 +6,29 @@ const area = document.getElementById("visualiser");
 const label = document.getElementById("label");
 
 //Decodes the base64 for the visualizer
-function decodeAudioFromBase64(base64Input){
-  //decode the original string to binary
+async function decodeAudioFromBase64(base64Input){
+  //decode the original base 64 string to a binary string
   const binaryAudio = atob(base64Input);
   const len = binaryAudio.length;
-  //makes a typed array that stores the binary data
+  //makes a typed array that stores the binary data as bytes
   const bytes = new Uint8Array(len);
-  //converting binary string into an array of bytes
+  //converting each character in the binary string to bytes
   for (let i = 0; i < len; i++) {
       bytes[i] = binaryAudio.charCodeAt(i);
   }
-  //next add: adding the audio to the web audio api and 
-  //setting up the async operation for initializing the visualizer
+  //Creating the audio context for the web audio api
+  const context = new (window.AudioContext || window.webkitAudioContext)();
+  //Decoding the binary data into an audio buffer
+  const audioBuffer = await context.decodeAudioData(bytes.buffer);
+  //Cleaning up the scene area and starting visualiser with audio
+  clearScene();
+  startVis(audioBuffer, context);
 }
 
 //Detecting for audio file selection to test
 audioInput.addEventListener("change", setAudio, false);
 let audio = new Audio();
-//handles audio file setup
+//Handles audio file setup
 function setAudio() {
   audio.pause();  //Pauses currently playing audio and gets the selected file
   const audioFile = this.files[0];  
@@ -63,16 +68,17 @@ function clearScene() {
   }
 }
 //starting the visualizer
-function startVis() {
-  //Creating the audio context
-  const context = new (window.AudioContext || window.webkitAudioContext)();
-  //Creating the audio source from the audio object
-  const src = context.createMediaElementSource(audio);
-  //Creating the analyser node for Visualizer portion
+function startVis(audioBuffer, context) {
+  //Creating the audio source node to play audio
+  const source = context.createBufferSource();
+  //links the convered audio buffer to the source
+  source.buffer = audioBuffer;
+  //Creating the analyser node for frequency data for visualizer
   const analyser = context.createAnalyser();
-  //connecting source to the analyzer and its output
-  src.connect(analyser);
+  //connecting source to the analyzer and its output and starts playing
+  source.connect(analyser);
   analyser.connect(context.destination);
+  source.start();
   
   analyser.fftSize = 512; //Setting the FFT size for the analyzer (# of frequency bins)
   const bufferLength = analyser.frequencyBinCount;  //Finding the number of data points
@@ -162,12 +168,12 @@ function startVis() {
 }
 
 //Normalizes the value to a specific range 
-function fractionate(val, minVal, maxVal) {
-  return (val - minVal) / (maxVal - minVal);
+function normalize(value, minValue, maxValue) {
+  return (value - minValue) / (maxValue - minValue);
 }
-//Modulates the value to a new range
-function modulate(val, minVal, maxVal, outMin, outMax) {
-  const fr = fractionate(val, minVal, maxVal); //Normalizing the value
+//Scaling the value to a new range
+function modulate(value, minValue, maxValue, outMin, outMax) {
+  const fr = normalize(value, minValue, maxValue); //Normalizing the value
   const delta = outMax - outMin;  //Calculating output range
   return outMin + (fr * delta); //Scaling and retuning value in output range
 }
