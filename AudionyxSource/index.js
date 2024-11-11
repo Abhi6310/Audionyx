@@ -211,9 +211,63 @@ app.get('/logout', (req, res) => {
   });
 });
 
+// ******** LIBRARY
+/*
+// POST route for uploading MP3 files
+app.post('/upload', upload.single('file'), (req, res) => {
+  const { title, genre } = req.body;
+  const fileUrl = `/uploads/${req.file.filename}`; // Path to the uploaded file
+
+  const newTrack = new Track({
+    title,
+    genre,
+    filetype: req.file.mimetype, 
+    fileUrl,
+  });
+
+  newTrack.save()
+    .then(() => res.redirect('/')) // Redirect back to the music library page after saving
+    .catch((err) => res.status(500).send('Error uploading file: ' + err));
+});
+
+// DELETE route for deleting a file
+app.post('/delete/:id', (req, res) => {
+  const trackId = req.params.id;
+
+  Track.findById(trackId)
+    .then(track => {
+      if (!track) {
+        return res.status(404).send('Track not found');
+      }
+
+      // Delete the file from the server
+      const filePath = path.join(__dirname, 'uploads', path.basename(track.fileUrl));
+      require('fs').unlink(filePath, (err) => {
+        if (err) {
+          return res.status(500).send('Error deleting file: ' + err);
+        }
+
+        // Delete the track from the database
+        Track.findByIdAndDelete(trackId)
+          .then(() => res.redirect('/')) // Redirect back to the music library page after deleting
+          .catch((err) => res.status(500).send('Error deleting track from database: ' + err));
+      });
+    })
+    .catch((err) => res.status(500).send('Error finding track: ' + err));
+});
+*/
+
+
+
+
 // *****************************************************
 // <!-- Start Server -->
 // *****************************************************
 app.listen(3000, () => {
   console.log('Server is listening on port 3000');
 });
+
+// TESTING
+//module.exports = app.listen(3000);
+
+
