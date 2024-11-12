@@ -1,0 +1,27 @@
+# TA Meeting 11.12.24 at 2:30pm
+
+# Alyssa went first displaying what she did for the week.
+    # Footer, Navbar, My Library, Visualizer
+
+# Connor worked with Agam for converters working with outputting base64 encodings.
+# Fixed his files, helped with legibility for teammates. 
+
+# Abhi worked on implmenting base64, converting binary to bytes decoding algorthim
+# Still working on integrating the visualizer through the database
+    # Hoping to get it done next week, we have some functionality as he showed in the presentation.
+    # Next step going forward would be to use API calls to get the audio working for longer period of time.
+
+# Agam did database stuff, worked on making a new projects table, base64 encoding of the MP3 files
+# Today, added part where it enters into the database.
+
+# Hunter mostly CSS implemntation and Logo design
+    # Signup and Login
+
+# Goals for next week:
+    - Agam, Connor, Abhi need to get together to get everything integrated and working.
+    - Hunter and Alyssa continue working frontend and helping with backend.
+    - Overarching goal is to have complete integration for next week.
+
+Notes from TA Chloe:
+- Making sure we use test cases from Lab 11 to figure out our index.js
+- Experiment with adding some package.json files to facillitate getting docker running with the visualizer
