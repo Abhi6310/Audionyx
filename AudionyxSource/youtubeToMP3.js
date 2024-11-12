@@ -4,6 +4,7 @@
 // //-ffmppeg
 // //-yt-dlp
 // //Here is a single command to install everything required on Debian based systems: sudo apt update && sudo apt install -y ffmpeg yt-dlp && npm install express fluent-ffmpeg
+// //Not sure how the install will work on other computers
 
 // const express = require('express'); //Used to create simple web server for testing
 // const ffmpeg = require('fluent-ffmpeg'); //ffmpeg to handle audio processing
