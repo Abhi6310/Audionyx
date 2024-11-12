@@ -51,7 +51,8 @@ app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'src', 'views'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(express.static(path.join(__dirname, 'src', 'resources')));
+app.use('/resources', express.static(path.join(__dirname, 'src', 'resources')));
 // Initialize session variables
 app.use(session({
   secret: process.env.SESSION_SECRET,
