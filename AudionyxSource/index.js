@@ -59,6 +59,9 @@ app.use(session({
   resave: false,
 }));
 
+// Serve static files
+app.use('/resources', express.static(path.join(__dirname, 'src/resources')));
+
 // *****************************************************
 // <!-- API Routes -->
 // *****************************************************
@@ -269,5 +272,3 @@ app.listen(3000, () => {
 
 // TESTING
 //module.exports = app.listen(3000);
-
-

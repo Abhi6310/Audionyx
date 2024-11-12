@@ -1,44 +1,54 @@
-body {
-    background: #f2f2f2;
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: black !important; /* Entire page background color black */
+    /*background-image: url(/Audionyx/AudionyxSource/src/resources/images/logo3.png) !important;
+    color: white; /* Text color white for the entire page */
+    font-family: Arial, sans-serif; /* Set the font */
+}
+
+/* Ensure the body takes the full height of the viewport */
+/* body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    margin: 0;
-    font-family: Arial, sans-serif;
-}
-
+} */
 .login-container {
-    background: #fff !important;
-    padding: 20px !important;
-    border-radius: 8px !important;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important;
-    width: 300px !important;
-    text-align: center !important;
+    background: rgba(0, 0, 0, 0.75); /* Semi-transparent background for login container */
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 100%; /* Restrict container width to a maximum of 500px */
+    text-align: center;
+    border: 1px solid rgb(129, 26, 145); /* Add a white border for better visibility */
+}
+.login-button {
+    background-color: rgb(129, 26, 145);
+    color: white;
+}
+h2, h5 {
+    color: white; /* Ensure headings are white */
 }
 
-h1 {
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.input-group {
+.input-group, .form-group {
     margin-bottom: 15px;
     text-align: left;
 }
 
 label {
-    display: block;
-    margin-bottom: 5px;
-    color: #555;
+    color: white; /* Ensure labels are white */
 }
 
 input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid white; /* Light border around input fields */
     border-radius: 4px;
     box-sizing: border-box;
+    background-color: black; /* Input background color black */
+    color: white; /* Input text color white */
 }
 
 button {
@@ -46,12 +56,17 @@ button {
     padding: 10px;
     border: none;
     border-radius: 4px;
-    background: #28a745;
-    color: #fff;
+    background: #28a745; /* Button background color green */
+    color: white; /* Button text color white */
     font-size: 16px;
     cursor: pointer;
 }
 
 button:hover {
-    background: #218838;
+    background: #218838; /* Darker green on hover */
+}
+
+/* Add specific styles for the navbar/header to ensure it's not affected */
+.navbar, .header {
+    width: auto !important; /* Override the width settings for navbar/header */
 }
