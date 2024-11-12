@@ -1,0 +1,49 @@
+# 11.12.24 Meeting Overview
+
+# Meeting Attendees:
+Screenshot of attendees attatched.
+Alyssa
+Connor
+Abhi
+Hunter
+Agam
+
+# What was accomplished this past week:
+frontend:  
+- Login
+- Signup 
+- Visualizer 
+- Library
+- Navbar
+- Footer
+backend:
+- Database encoding, queries
+- YouTube to MP3 and Spotify to MP3 files and adapted both of them to output the MP3 encoded using base64
+- Comment clarity for understanding
+- Decoding algorithm for base64
+- Adjusted the renderer to take in the decoded audio file and display onto the home page
+
+# Who did what?
+Alyssa - CSS implementation for footer, navbar, visualizer, and my library
+Agam - Finished database encodings, query for pulling from database
+Abhi - Decoding algorithm for base64 and adjusted the renderer to take in the decoded audio file and display onto the home page
+Hunter - CSS implementation or login and signup, logo
+Connor - YouTube to MP3 and Spotify to MP3 file convertes, adapted both of them to output the MP3 encoded using base64. Tidied up comments
+
+
+# Discussion Key Points: 
+- What we have gotten done, where we fell short
+- Got CSS styling down, there were some issues with pulling, so we will figure that out as a team going forward
+- We need to complete Lab 11
+
+
+# Goals for Next Meeting:
+- Have the site working properly with visualizer, get the prestart files going
+- Ability for everyone to run the visualizer locally
+- Edit index.js to get proper API routes and calling
+- Once we have something working, we can add our effects
+    - Improve Visualizer interface
+
+# Additional Notes:
+
+
