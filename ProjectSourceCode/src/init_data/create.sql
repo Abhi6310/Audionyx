@@ -1,7 +1,6 @@
 CREATE TABLE Library (
     library_id SERIAL PRIMARY KEY,
     library_name VARCHAR(255) NOT NULL,
-    base64_encoding TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
