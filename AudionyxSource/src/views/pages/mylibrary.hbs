@@ -1,8 +1,129 @@
-<div class="container">
+<style>
+/* PAGE LAYOUT w/ PURPLE ANIMATION */
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: linear-gradient(45deg, #d1a7f7, #8e44ad, #4b2e83, #2c1b56);
+    background-size: 200% 200%; /* Expands the background area for smooth transitions */
+    animation: gradientAnimation 15s ease infinite; /* Animation definition */
+    font-family: Arial, sans-serif;
+  }
+
+  /* Keyframes for the animated gradient */
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
+/* General Layout Styles */
+.library-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Section Styles */
+.mt-5 {
+  margin-top: 50px;
+}
+
+.upload-section {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
+}
+
+.upload-section h3 {
+  font-size: 2rem;
+  color: #5e2a8c;
+  margin-bottom: 20px;
+}
+
+.upload-section h5 {
+  font-size: 1.25rem;
+  color: #6c757d;
+  margin-bottom: 15px;
+}
+
+.upload-section label {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.upload-section select, 
+.upload-section input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.upload-section input[type="file"]:focus {
+  border-color: #5e2a8c;
+}
+
+.upload-section button[type="submit"] {
+  background-color: #5e2a8c;
+  color: white;
+  font-size: 1.1rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.upload-section button[type="submit"]:hover {
+  background-color: #4b1f7a;
+}
+
+/* Custom File Upload Button */
+.btn-upload {
+  display: inline-block;
+  background-color: #5e2a8c;
+  color: white;
+  font-size: 1rem;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  border: none;
+  transition: background-color 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.btn-upload:hover {
+  background-color: #4b1f7a;
+}
+
+.upload-section input[type="file"]:hover {
+  cursor: pointer;
+}
+
+</style>
+
+
+</style>
+<div class="library-container">
   <!-- Upload Section -->
   <div class="mt-5">
     <div class="upload-section">
-      <h3>My Library</h3>
+      <h3>{{username}}'s Library</h3>
       
       <!-- Conversion Form -->
       <h5>Add to library</h5>
@@ -21,7 +142,7 @@
         <input type="text" id="url" name="url" placeholder="Enter the URL" required>
 
         <!-- File input for uploading local MP3 file -->
-        <label for="file">Upload MP3 File:</label>
+        <label for="file">Click here to upload an MP3 File</label>
         <input type="file" id="file" name="file" accept=".mp3" required style="display: none;"> <!-- Hide by default -->
 
         <button type="submit" class="btn btn-primary">Convert & Add</button>
