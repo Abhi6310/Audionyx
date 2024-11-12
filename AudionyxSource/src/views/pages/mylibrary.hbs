@@ -118,7 +118,6 @@
 </style>
 
 
-</style>
 <div class="library-container">
   <!-- Upload Section -->
   <div class="mt-5">
@@ -142,9 +141,10 @@
         <input type="text" id="url" name="url" placeholder="Enter the URL" required>
 
         <!-- File input for uploading local MP3 file -->
-        <label for="file">Click here to upload an MP3 File</label>
-        <input type="file" id="file" name="file" accept=".mp3" required style="display: none;"> <!-- Hide by default -->
-
+        <div class="form-group mb-3">
+          <input type="file" id="file" name="file" accept=".mp3" class="form-control-file"  style="display: none;">
+          <button type="button" class="btn btn-secondary mt-2" onclick="document.getElementById('file').click()">Upload MP3 File</button>
+        </div>
         <button type="submit" class="btn btn-primary">Convert & Add</button>
       </form>
     </div>
@@ -173,6 +173,11 @@
               <button type="submit" class="btn btn-danger btn-sm">Delete</button>
             </form>
           </td>
+        </tr>
+        {{else}}
+        <!-- Display an empty row if no results are available -->
+        <tr>
+          <td colspan="4" class="text-center">No music in library yet</td>
         </tr>
         {{/each}}
       </tbody>
