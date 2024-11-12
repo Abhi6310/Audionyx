@@ -21,3 +21,5 @@
     # Spotify to MP3, YouTube to MP3 using base 64
 
     # Decoding algorithm for base64
+
+    # Adjusted the renderer to take in the decoded audio file and display onto the home page
