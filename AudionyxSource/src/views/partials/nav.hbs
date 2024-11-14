@@ -17,12 +17,58 @@
     gap: 20px;
   }
 
-  .navbar-brand {
-    font-size: 20px; /* Slightly larger than navbar links */
-    font-weight: bold;
-    color: #9a69ba; /* Static purple color */
-
+@keyframes colorChange {
+  0% {
+    color: #ccbcca; /* Light pink */
   }
+  12.5% {
+    color: #e09ae0; /* Light pink */
+  }
+  25% {
+    color: #c585fe; /* Soft purple */
+  }
+  37.5% {
+    color: #9e4aff; /* Medium purple */
+  }
+  50% {
+    color: #bd54db; /* Bright purple */
+  }
+  62.5% {
+    color: #a83abf; /* Purple with more red */
+  }
+  75% {
+    color: #c113ba; /* Vibrant pink */
+  }
+  87.5% {
+    color: #5d2650; /* Soft light pinkish-red */
+  }
+  100% {
+    color: #ccbcca; /* Light pink (back to start) */
+  }
+}
+
+.element {
+  animation: colorChange 5s infinite; /* Adjust time as needed */
+}
+
+
+.element {
+  animation: colorChange 5s infinite; /* Adjust time as needed */
+}
+
+
+.element {
+  animation: colorChange 5s infinite; /* Adjust time as needed */
+}
+
+
+
+.navbar-brand {
+  font-size: 20px; /* Slightly larger than navbar links */
+  font-weight: bold;
+  animation: colorChange 6s infinite ease-in-out; /* Longer animation duration */
+}
+
 
   /* Make nav links smaller than the brand name */
   .navbar-nav .nav-link {
@@ -38,7 +84,7 @@
 </style>
 
 <header>
-  <nav class="navbar navbar-expand-sm border-bottom">
+  <nav class="navbar navbar-expand-sm">
     <div class="container">
       <!-- Logo/Brand Name on the Left with Headphone Icon -->
       <a class="navbar-brand" href="/">
