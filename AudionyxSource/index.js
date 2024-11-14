@@ -67,7 +67,6 @@ app.use('/resources', express.static(path.join(__dirname, 'src/resources')));
 // <!-- API Routes -->
 // *****************************************************
 
-
 // Opening Screen to Login!
 app.get('/', (req, res) => {
   res.redirect('/mylibrary'); 
@@ -93,7 +92,7 @@ app.get('/all', (req, res) => {
   });
 });
 
-// REGISTER
+// *********************** REGISTER API ROUTES **************************
 const user = {
   username: undefined,
   password: undefined,
@@ -112,6 +111,14 @@ app.get('/register', (req, res) => {
 
 app.post('/register', async (req, res) => {
   const username = req.body.username;
+
+  
+  // NEGATIVE REGISTER TEST CASE: Validate that username is no longer than 50 characters
+  if (username.length > 50) {
+    return res.status(400).json({ message: 'The username you entered exceeds the 50 character limit. Please choose a different username.' });
+  }
+
+
   const hash_pass = await bcrypt.hash(req.body.password, 10);
   const query = 'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;';
   db.any(query, [
@@ -119,20 +126,38 @@ app.post('/register', async (req, res) => {
     hash_pass
   ])
   .then(data => {
+    // POSITIVE REGISTER TEST CASE
+    /*
+    res.status(200).json({ message: 'Account successfully created!' });
+    */
+
+    // ORIGINAL, COMMENT WHEN TESTING
+    // /*
     res.render('pages/login', {
       message: 'Account successfully created!'
     });
+    // */
   })
+
   .catch(err => {
     console.log(err);
+    // NEGATIVE REGISTER TEST CASE 
+    /*
+    res.status(400).json({ message: 'Uh oh! Something went wrong, your username was invalid or already registered!' });
+    */
+
+    // ORIGINAL, COMMENT WHEN TESTING
+    // /*
     res.render('pages/register', {
       error: true,
       message: "Uh oh! Something went wrong, your username was invalid or already registered!"
     });
+    // */
   });
+
 });
 
-// LOGIN
+// *********************** LOGIN API ROUTES **************************
 app.get('/login', (req, res) => {
   if (req.session.user) {
     res.render('pages/login', {
@@ -153,14 +178,19 @@ app.post('/login', (req, res) => {
 
   db.one(query, values)
     .then(async data => {
-      user.username = data.username;
+    // POSITIVE LOGIN TEST CASE -- will cause HTTP error b/c multiple requests
+    /*
+    res.status(200).json({ message: 'Login successful! Welcome back to Audionyx!' });
+    */
+
+    user.username = data.username;
       user.password = data.password;
       const match = await bcrypt.compare(req.body.password, user.password);
 
       if (match) {
         req.session.user = user;
         req.session.save();
-
+        
         res.redirect('/mylibrary');
 
       } else {
@@ -172,15 +202,25 @@ app.post('/login', (req, res) => {
     })
     .catch(err => {
       console.log(err);
+      // NEGATIVE LOGIN TEST CASE 
+      /*
+      res.status(400).json({ message: 'No username found, sign up to make an account.' });
+      */
+
+      // ORIGINAL, COMMENT WHEN TESTING
+      // /*
       res.render('pages/login', {
         error: true,
         message: "No username found, sign up to make an account."
       });
+      // */
+
     });
 });
 
 
-// Authentication Middleware
+
+// *********************** AUTHENTICATION MIDDLEWARE ***************************
 const auth = (req, res, next) => {
   if (!req.session.user) {
     return res.redirect('/login');
@@ -191,23 +231,23 @@ const auth = (req, res, next) => {
 // Requires authentication for certain routes
 app.use(auth);
 
-// Home - Render home page if authenticated
+// *********************** HOME API ROUTES **************************
 app.get('/home', (req, res) => {
   res.render('pages/home', { title: 'Visualizer Home', username: req.session.user.username });
 });
 
-// Home to my library
+// *********************** MY LIBRARY API ROUTES **************************
 app.get('/home', (req, res) => {
   res.redirect('/mylibrary');  // Redirect to My Library if authenticated
 });
 
-// My Library - Render mylibrary page if authenticated
 app.get('/mylibrary', (req, res) => {
   res.render('pages/mylibrary', { title: 'My Library', username: req.session.user.username });
 });
 
 
-// Logout
+// *********************** LOGOUT API ROUTE **************************
+
 app.get('/logout', (req, res) => {
   req.session.destroy();
   res.render('pages/logout', {
@@ -262,14 +302,27 @@ app.post('/delete/:id', (req, res) => {
 */
 
 
+// *****************************************************
+// <!-- TESTING FROM LAB 11 -->
+// *****************************************************
 
+/*
+app.get('/welcome', (req, res) => {
+  res.json({status: 'success', message: 'Welcome!'});
+});
+*/
 
 // *****************************************************
 // <!-- Start Server -->
 // *****************************************************
-app.listen(3000, () => {
-  console.log('Server is listening on port 3000');
-});
 
-// TESTING
-//module.exports = app.listen(3000);
+// /*
+app.listen(3000, () => {
+    console.log('Server is listening on port 3000');
+});
+// */
+
+
+// TESTING FROM LAB 11
+
+// module.exports = app.listen(3000);
