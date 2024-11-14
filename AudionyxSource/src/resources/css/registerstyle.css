@@ -1,27 +1,37 @@
 /* Basic Reset */
-* {
+/* * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+} */
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: rgb(52, 9, 52)!important; /* Entire page background color black */
+    /* background-image: url(/Audionyx/AudionyxSource/src/resources/images/logo3.png) !important; */
+    color: white; /* Text color white for the entire page */
+    font-family: Arial, sans-serif; /* Set the font */
 }
-
 /* Body Style */
-body {
-    background: linear-gradient(135deg, #1db954, #191414);
+/* body {
+    background: linear-gradient(135deg, #6a0563, #191414);
     font-family: 'Helvetica Neue', Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     color: #fff;
-}
+} */
 
 /* Container Style */
-.registration-container {
+.register-container {
     background: rgba(0, 0, 0, 0.8);
     padding: 30px;
     border-radius: 10px;
-    width: 300px;
+    width: 100% !important;
+    max-width: 100% !important; /* Restrict container width to a maximum of 500px */
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
     text-align: center;
 }
@@ -69,4 +79,7 @@ button {
 
 button:hover {
     background: #1ed760;
+}
+.navbar, .header {
+    width: auto !important; /* Override the width settings for navbar/header */
 }

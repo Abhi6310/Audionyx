@@ -3,18 +3,14 @@ html, body {
     width: 100%;
     margin: 0;
     padding: 0;
-    background-color: black !important; /* Entire page background color black */
-    /*background-image: url(/Audionyx/AudionyxSource/src/resources/images/logo3.png) !important;
+    background-color: rgb(52, 9, 52)!important; /* Entire page background color black */
+    /* background-image: url(/Audionyx/AudionyxSource/src/resources/images/logo3.png) !important; */
     color: white; /* Text color white for the entire page */
     font-family: Arial, sans-serif; /* Set the font */
 }
 
 /* Ensure the body takes the full height of the viewport */
-/* body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-} */
+
 .login-container {
     background: rgba(0, 0, 0, 0.75); /* Semi-transparent background for login container */
     padding: 20px;
@@ -23,6 +19,16 @@ html, body {
     max-width: 100%; /* Restrict container width to a maximum of 500px */
     text-align: center;
     border: 1px solid rgb(129, 26, 145); /* Add a white border for better visibility */
+}
+.register-container {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 30px;
+    border-radius: 10px;
+    width: 100% !important;
+    max-width: 100% !important; /* Restrict container width to a maximum of 500px */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    color: white !important;
 }
 .login-button {
     background-color: rgb(129, 26, 145);
