@@ -1,0 +1,81 @@
+# User Acceptance Testing
+
+# Criteria
+    # Create 1 document per team, within the milestones folder in the project directory, that describes how, at least, 3 features within your finished product will be tested.
+    # The test plans should include specific test cases (user acceptance test cases) that describe the data and the user activity that will be executed in order to verify proper functionality of the feature.
+    # The test plans should include a description of the test data that will be used to test the feature.
+    # The test plans should include a description of the test environment ( localhost / cloud ) that will be used to test the feature.
+    # The test plans should include a description of the test results that will be used to test the feature.
+    # The test plan should include information about the user acceptance testers.
+
+# Test Case 1: Upload MP3 File Successfully
+Feature: MP3 File Upload
+Test Objective: Verify that a valid MP3 file can be uploaded to the database successfully.
+
+Test Data:
+
+Input: A valid MP3 file
+Expected Output: The MP3 file is uploaded and saved in the library database 
+
+Test Environment: Localhost
+
+Test Steps: Go to the My Library page, select the valid MP3 file (e.g., test_audio.mp3) from the local file system, and click the "Upload" button to upload the file.
+
+The system should accept the file and display a success message, such as "File uploaded successfully."
+Verify that the MP3 file is saved in the database, by referencing the library.
+
+Expected Results:
+
+The file is successfully uploaded and stored in the database and showing in the library.
+A success message is displayed.
+The file metadata is correctly recorded in the database.
+Pass/Fail Criteria:
+
+Test passes if the file is uploaded, the success message is shown, and the metadata is correctly stored in the database.
+Test fails if any error occurs during the upload or the file is not stored correctly in the database.
+
+# Test Case 2: Login Success
+Feature: User creates and logs into an account
+Test Objective: Verify that a user can login successfully.
+
+Test Data:
+
+Input: A registered username and password
+Expected Output: Login message and redirect to mylibrary.
+
+Test Environment: Localhost
+
+Test Steps: User will signup for an account, and use those credentials to login.
+
+The system should accept the login, and redirect the user to mylibrary.
+
+Expected Results:
+
+User is redirected to their library.
+
+Test passes if user is logged in and redirected to Mylibrary page.
+
+Test fails if any error message is posted, e.g. username does not exist, cannot log in
+
+# Test Case 3: User can play an MP3 file from library.
+Feature: User can play their uploaded content.
+Test Objective: Verify that a user can play an MP3 file or link they uploaded in the visualizer.
+
+Test Data:
+
+Input: Clicking the play button.
+Expected Output: Visualizer plays their MP3 and functions.
+
+Test Environment: Localhost
+
+Test Steps: User will have uploaded an MP3 file from their system, and is able to play it in the visualizer.
+
+The system should upload the file, get it when the user plays it, and play their visualizer on the page.
+
+Expected Results:
+
+User can play their visually rendered MP3 file.
+
+Test passes if user is able to see the rendered visual, and the file is from library.
+
+Test fails if any error message is posted, e.g. file cannot be found, or played.
