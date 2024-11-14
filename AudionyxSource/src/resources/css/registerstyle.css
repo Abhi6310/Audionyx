@@ -27,13 +27,13 @@ html, body {
 
 /* Container Style */
 .register-container {
-    background: rgba(0, 0, 0, 0.8);
-    padding: 30px;
-    border-radius: 10px;
-    width: 100% !important;
-    max-width: 100% !important; /* Restrict container width to a maximum of 500px */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.75); /* Semi-transparent background for login container */
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 100%; /* Restrict container width to a maximum of 500px */
     text-align: center;
+    border: 1px solid rgb(129, 26, 145); /* Add a white border for better visibility */
 }
 
 /* Heading Style */
