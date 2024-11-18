@@ -1,3 +1,18 @@
+//getting the audio data from the database
+async function fetchAndVisualizeAudio(projectId) {
+  try {
+    const response = await fetch(`/project/${projectId}`);
+    const data = await response.json();
+    if (data.base64Encoding) {
+      decodeAudioFromBase64(data.base64Encoding);
+    } else {
+      console.error("No base64 encoding");
+    }
+  } catch (error) {
+    console.error("Error getting base64 audio", error);
+  }
+}
+
 //Ensures DOM content is loaded before running the script
 document.addEventListener('DOMContentLoaded', () => {
   //Audio input from DOM
