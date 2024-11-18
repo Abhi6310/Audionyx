@@ -22,10 +22,18 @@ html, body {
 }
 
 .login-button {
-    background-color: rgb(129, 26, 145);
+    background-color: rgb(169, 89, 181);
+    color: white;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.login-button:hover {
+    background-color: rgb(139, 69, 161);  /* Slightly darker purple on hover */
     color: white;
 }
-h2, h5 {
+
+h2, h5 { 
     color: white; /* Ensure headings are white */
 }
 
@@ -53,17 +61,21 @@ button {
     padding: 10px;
     border: none;
     border-radius: 4px;
-    background: #28a745; /* Button background color green */
     color: white; /* Button text color white */
     font-size: 16px;
     cursor: pointer;
-}
-
-button:hover {
-    background: #218838; /* Darker green on hover */
 }
 
 /* Add specific styles for the navbar/header to ensure it's not affected */
 .navbar, .header {
     width: auto !important; /* Override the width settings for navbar/header */
 }
+
+/* Change signup link color & hover */
+.signup-link {
+    color: #662d91; 
+}
+.signup-link:hover {
+    color: #800080; 
+}
+
