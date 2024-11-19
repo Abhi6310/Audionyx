@@ -10,6 +10,8 @@ const pgp = require('pg-promise')();
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const getBase64Encoding = require('./youtubeToMP3');
 
 // *****************************************************
 // <!-- Connect to DB -->
@@ -245,6 +247,41 @@ app.get('/mylibrary', (req, res) => {
   res.render('pages/mylibrary', { title: 'My Library', username: req.session.user.username });
 });
 
+// app.post('/create-project', auth, async (req, res) => {
+//   const { projectName, description, libraryName } = req.body; // Input from the client
+//   const username = req.session.user.username; // Current logged-in user
+  
+//   try {
+//     // Step 1: Check or create the library
+//     let libraryId;
+
+//     const libraryQuery = 'SELECT library_id FROM Library WHERE library_name = $1;';
+//     const libraryResult = await db.any(libraryQuery, [libraryName]);
+
+//     if (libraryResult.length > 0) {
+//       libraryId = libraryResult[0].library_id;
+//     } else {
+//       const newLibraryQuery = 'INSERT INTO Library (library_name) VALUES ($1) RETURNING library_id;';
+//       const newLibraryResult = await db.one(newLibraryQuery, [libraryName]);
+//       libraryId = newLibraryResult.library_id;
+//     }
+
+//     // Step 2: Get the Base64 encoding from the external file
+//     const base64Encoding = await getBase64Encoding();
+
+//     // Step 3: Insert the project into the database
+//     const projectQuery = `
+//       INSERT INTO Projects (project_name, description, base64_encoding, library_id) 
+//       VALUES ($1, $2, $3, $4) RETURNING project_id;
+//     `;
+//     const projectResult = await db.one(projectQuery, [projectName, description, base64Encoding, libraryId]);
+
+//     res.status(200).json({ message: 'Project created successfully!', projectId: projectResult.project_id });
+//   } catch (error) {
+//     console.error('Error creating project:', error);
+//     res.status(500).json({ message: 'Error creating project', error: error.message });
+//   }
+// });
 
 // *********************** LOGOUT API ROUTE **************************
 
@@ -254,6 +291,7 @@ app.get('/logout', (req, res) => {
       message: "You have successfully been logged out!"
   });
 });
+
 
 // ******** LIBRARY
 /*

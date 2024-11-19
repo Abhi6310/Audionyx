@@ -1,0 +1,29 @@
+Release Notes - Week 4
+Release Date: November 19, 2024
+
+# Frontend Updates:
+    Updated Login and Register Styling:
+        Addressed several design issues with the background and navbar.
+        Worked on improving the login and register containers, focusing on color scheme and overall simplicity in design.
+
+        Addressed several design issues with the background and navbar.
+        Worked on improving the login and register containers, focusing on color scheme and overall simplicity in design.
+    Visualizer Styling:
+        Applied new visual effects and animations to the audio visualizer to improve responsiveness and aesthetics.
+
+    Visualizer Displaying:
+        Fixed rendering issues on the visualizer component to ensure that audio data is displayed correctly during playback.
+
+# Backend Updates:
+    Added fetch functionality to the visualizer to retrieve and render audio from the database.
+
+    Cleaned up the code by removing the MP3 rendering functionality, ensuring the visualizer now works solely with audio data from the database.
+    
+    Resolved base64 encoding issues. Implemented a new function that calls youtubeToMP3 and stores the base64-encoded files in the database.
+    
+    Implemented a new function that calls youtubeToMP3 and stores the base64-encoded files in the database.
+
+# Known Issues:
+    Visualizer is not properly rendering due to integration issues.
+
+End of Release Notes
