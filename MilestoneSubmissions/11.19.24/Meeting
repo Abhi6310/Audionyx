@@ -1,0 +1,53 @@
+# 11.12.24 Meeting Overview
+
+# Meeting Attendees:
+Screenshot of attendees attatched.
+Alyssa
+Connor
+Abhi
+Hunter
+Agam
+
+# What was accomplished this past week:
+frontend:  
+Completed stylization of front end design for login and register. Only thing that is left to change are the submission buttons for logging in and signing up.
+
+Library and Homepage had some visual changes, it is limited as of right now as we are waiting for integration with backend.
+
+backend:
+Working together to integrate 
+
+
+# Who did what?
+Abhi - Added fetch functionality to visualiser to take and render audio from the database. Cleaned up code and removed mp3 rendering functionality so that the visualiser only works with the database
+
+Alyssa - Worked together with Hunter to get navbar fixed and logo matching, fixed some design issues with the background and the navbar. Worked on login and register containers and coloration and simple design.
+
+Connor - Fixed base64 encoding output in both spotifyToMP3 and youtubeToMP3. Now it outputs the proper encoded file. Testing them and verified via command line.
+
+Hunter - Modified the index.js file to accept static files so that css could be properly applied to the chosen pages and so that our logo can be displayed.
+ 
+Agam - Worked with Connor to get base64 encoding, and then I worked on writing the function which calls the youtubetomp3 file and stores the base64 encoding in the database. 
+
+
+# Discussion Key Points: 
+We are almost done with the project but did not get as much as we intended within the last week complete.
+
+CSS plans going forward, need to work on library and home page, incomplete as we are waiting for integration in backend so everything can be properly applied.
+
+There were errors with index.js when merging changes for integrating the backend details.
+
+We are a bit behind this week, but we are planning to get on it this week and get this project done and adding the additional effects we want for our website.
+
+# Goals for Next Meeting:
+Complete last weeks goals, having everything functioning and fully integrated.
+
+CSS styling for frontend complete.
+
+Website complete, and time to add additional details:
+Ideas:
+    Background effects, visual effects personalized by user, profile, etc.
+
+
+# Additional Notes:
+
