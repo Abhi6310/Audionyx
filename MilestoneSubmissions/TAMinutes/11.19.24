@@ -1,0 +1,39 @@
+# TA Meeting 11.19.24 at 2:30pm
+
+# REMINDERS
+
+    # Last TA meeting today, we can optionally choose to meet week of project week if we want or need feedback.
+
+    # Reminder to signup for presentation date on canvas calender
+
+    # Reminder for extra credit, it is there, just need to submit before NOV 30 (deadline)
+        # Have project complete and google form submitted, worth 10% extra credit
+
+# Starting meeting ---
+
+    # Agam started with presenting that him and Connor worked together. Initially started towards the end of last week,
+    working on pulling a base encoding from the database. A lot of issues and attempts using different methods. They did get
+    it working. Agam wrote a query to store it, but we just need to work on testin it and integrating it properly.
+    
+    # Going forward, work with Abhi to integrate and get it working with the database.
+
+    # Connor went next, again working on the same thing together, ensuring proper outputs from the base64 file,
+    files were tested on the command line, just need to store the database and give it to Abhi.
+
+    # Abhi focused on the visualizer. Getting fetch functionality working, so we could get audio to the database.
+        # Going forward continuing to work on the integration.
+
+    # Reccomendation, treating base64 as a mp3.
+
+    # Alyssa and Hunter worked on frontend, working on navbar and design issues, working on theme, and register and login complete.
+    # We are planning to continue working on logout, visulizer, and library after full integration
+
+# Feedback
+    # We are close to deadline, won't be able to meet up and get feedback but we can get in contact if necessary since the deadline is coming.
+
+    # Presenting likely on Thursday (from break).
+
+    # Getting integration working is a very urgent matter. 
+
+
+# Overall goals going forward, pretty much time to crunch and get this project done, integration and styling.
