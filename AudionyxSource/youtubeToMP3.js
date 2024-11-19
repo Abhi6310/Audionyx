@@ -52,9 +52,9 @@ app.get('/convertVideo', (req, res) =>
     .on('data', chunk => mp3Data.push(chunk)) //Collect data in chunks
     .on('end', () => 
     {
-    const base64Audio = Buffer.concat(mp3Data).toString('base64');
-    console.log('Base64 Encoded MP3:', base64Audio);
+    const base64Audio = Buffer.concat(mp3Data).toString('base64'); //convert base64 to string
+    console.log('Base64 Encoded MP3:', base64Audio);//output string to console for testing
     });
     });
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;//Change to support docker later but currently set up for local testing 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
