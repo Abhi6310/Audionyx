@@ -30,12 +30,14 @@ app.get('/convertSpotify', async (req, res) =>
     {
         return res.status(400).send('Please provide Spotify URL.');
     }
+
     //Use Spotify API to get song ID
     const trackId = spotifyUrl.split('track/')[1];
     if (!trackId) 
     {
         return res.status(400).send('Wrong Spotify URL.');
     }
+
     try 
     {
         //Login to Spotify API
@@ -44,7 +46,7 @@ app.get('/convertSpotify', async (req, res) =>
 
         //Getting track details from Spotify's API
         const trackData = await spotifyApi.getTrack(trackId);
-        const { name, artists } = trackData.body;
+        const {name, artists} = trackData.body;
         const artistName = artists[0].name;
         const title = `${artistName} - ${name}`;
         console.log(`Searching for: ${title}`);//logging
@@ -57,7 +59,8 @@ app.get('/convertSpotify', async (req, res) =>
 
         //Get first video ID from the search results on youtube
         const videoIdMatch = searchText.match(/"videoId":"(.*?)"/);
-        if (!videoIdMatch) {
+        if (!videoIdMatch) 
+        {
             return res.status(404).send('Could not find the song on YouTube.');
         }
         const videoId = videoIdMatch[1];
@@ -81,30 +84,37 @@ app.get('/convertSpotify', async (req, res) =>
             res.status(500).send('Error fetching video with yt-dlp');
         });
 
-    //Pipe yt-dlp audio stream output to ffmpeg in order to convert to MP3
-    const ffmpegProcess = new ffmpeg({source: ytDlpProcess.stdout})//using fluent-ffmpeg, sets source as ytDlpProcess.stdout and audio stream from yt-dlp
+        const ffmpegProcess = ffmpeg(ytDlpProcess.stdout)//using fluent-ffmpeg, sets source as ytDlpProcess.stdout and audio stream from yt-dlp
         .setFfmpegPath(ffmpegLocation)//location
         .withAudioCodec('libmp3lame')//Uses libmp3lame codec to convert https://trac.ffmpeg.org/wiki/Encode/MP3
         .toFormat('mp3')//sets format as mp3
-        .output(res)
         .on('start', commandLine => console.log('FFmpeg command:', commandLine))//Logs ffmpeg
         .on('progress', progress => console.log('Processing:', progress))//Logs details
         .on('stderr', stderrLine => console.log('Stderr output:', stderrLine))//Logs when its over
-        .on('end', () => console.log('MP3 conversion finished'))
-        .on('error', (err) => //Error
-    {
+        .on('end', () => 
+        {
+        console.log('MP3 conversion and encoding finished.');
+        res.send('MP3 conversion and encoding finished. Check console for output.');
+        })
+        .on('error', err => 
+        {
         console.error('Error during MP3 conversion:', err);
-        res.status(500).send('Error during MP3 conversion');
-    })
-    .run();
-    }
-    catch (error)
+        res.status(500).send({ error: 'Error during MP3 conversion' });
+        });
+    //Output MP3 data as a Base64 string
+    let mp3Data = [];
+    ffmpegProcess.pipe()
+    .on('data', chunk => mp3Data.push(chunk)) //Collect data in chunks
+    .on('end', () => 
     {
-        console.error('Error processing Spotify track:', error);
-        res.status(500).send('Failed to process Spotify track.');
-    }
+    const base64Audio = Buffer.concat(mp3Data).toString('base64');
+    console.log('Base64 Encoded MP3:', base64Audio);
+    });
+} catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An unexpected error occurred.');
+  }
 });
-
 const PORT = process.env.PORT || 3000; //Local server to get it working.
 app.listen(PORT, () => 
 {
