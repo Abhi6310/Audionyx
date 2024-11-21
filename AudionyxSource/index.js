@@ -369,11 +369,18 @@ app.get('/welcome', (req, res) => {
 // <!-- Start Server -->
 // *****************************************************
 
-// /*
+// ONLY UNCOMMENT WHEN RUNNING LOCALLY, DO NOT PUSH PLEASE
+/*
 app.listen(3000, () => {
     console.log('Server is listening on port 3000');
 });
-// */
+*/
+
+// FOR RENDER DEPLOYMENT
+app.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
+});
+
 
 
 // TESTING FROM LAB 11
