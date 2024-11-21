@@ -378,7 +378,7 @@ app.listen(3000, () => {
 
 // FOR RENDER DEPLOYMENT
 app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+  console.log(`Server is listening on port ${5432}`);
 });
 
 
