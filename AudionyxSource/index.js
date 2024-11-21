@@ -23,7 +23,9 @@ const hbs = handlebars.create({
   partialsDir: path.join(__dirname, 'src', 'views', 'partials'),
 });
 
-// Database configuration
+// Database configuration IF YOU ARE USING DOCKER TO HOST LOCALLY.
+// DO NOT PUSH WITH THIS CONFIG, IT WILL REMOVE OUR HOSTED WEBSITE
+/*
 const dbConfig = {
   host: 'db',
   port: 5432,
@@ -31,6 +33,19 @@ const dbConfig = {
   user: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
 };
+*/
+
+// Database configuration FOR CLOUD HOSTING DEPLOYMENT
+
+const dbConfig = {
+  host: process.env.POSTGRES_HOST, 
+  port: 5432,  
+  database: process.env.POSTGRES_DB,
+  user: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+};
+
+
 
 const db = pgp(dbConfig);
 
