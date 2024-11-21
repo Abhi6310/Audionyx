@@ -1,0 +1,81 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: rgb(52, 9, 52)!important; /* Entire page background color black */
+    /* background-image: url(/Audionyx/AudionyxSource/src/resources/images/logo3.png) !important; */
+    color: white; /* Text color white for the entire page */
+    font-family: Arial, sans-serif; /* Set the font */
+}
+
+/* Ensure the body takes the full height of the viewport */
+
+.logout-container {
+    background: rgba(0, 0, 0, 0.75); /* Semi-transparent background for login container */
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 100%; /* Restrict container width to a maximum of 500px */
+    text-align: center;
+    border: 1px solid rgb(129, 26, 145); /* Add a white border for better visibility */
+}
+
+.login-button {
+    background-color: rgb(169, 89, 181);
+    color: white;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.login-button:hover {
+    background-color: rgb(139, 69, 161);  /* Slightly darker purple on hover */
+    color: white;
+}
+
+h2, h5 { 
+    color: white; /* Ensure headings are white */
+}
+
+.input-group, .form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+label {
+    color: white; /* Ensure labels are white */
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid white; /* Light border around input fields */
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: black; /* Input background color black */
+    color: white; /* Input text color white */
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    color: white; /* Button text color white */
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Add specific styles for the navbar/header to ensure it's not affected */
+.navbar, .header {
+    width: auto !important; /* Override the width settings for navbar/header */
+}
+
+/* Change signup link color & hover */
+.signup-link {
+    color: #662d91; 
+}
+.signup-link:hover {
+    color: #800080; 
+}
+
