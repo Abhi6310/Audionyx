@@ -376,12 +376,6 @@ app.listen(3000, () => {
 });
 */
 
-// FOR RENDER DEPLOYMENT
-app.listen(5432, () => {
-  console.log(`Server is listening on port 5432`);
-});
-
-
 // TESTING FROM LAB 11
 
 // module.exports = app.listen(3000);
