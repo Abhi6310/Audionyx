@@ -3,75 +3,173 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Page</title>
     <!-- Link to your CSS file -->
-    <link rel="stylesheet" href="../resources/css/librarystyle.css">
+    <link rel="stylesheet" href="../resources/css/librarystyle.css"> 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-  <div class="library-container">
-    <!-- Upload Section -->
-    <div class="mt-5">
-      <div class="upload-section">
-        <h3>{{username}}'s Library</h3>
-        
-        <!-- Conversion Form -->
-        <h5>Add to library</h5>
-        <form action="/convert" method="post" enctype="multipart/form-data">
-          <!-- Dropdown to select source -->
-          <label for="source">Select Source:</label>
-          <select id="source" name="source" required>
-            <option value="" disabled selected>Select Source</option>
-            <option value="youtube">YouTube</option>
-            <option value="spotify">Spotify</option>
-            <option value="local">Local MP3 File</option> <!-- Option to upload locally -->
-          </select>
+    <div class="library-container">
+        <!-- Modal Structure -->
+        <div id="uploadModal" class="modal">
+            <div class="modal-content">
+                <span id="closeModalBtn" class="close">&times;</span>
+                <h3 class="text-center">Add a song to your library</h3>
+                
+                <div class="form-group">
+                    <label for="file-type">Choose upload type:</label>
+                    <select id="file-type" class="form-control">
+                        <option value="mp3">MP3</option>
+                        <option value="youtube">YouTube (Convert)</option>
+                        <option value="spotify">Spotify Link (Convert)</option>
+                    </select>
+                </div>
 
-          <!-- URL input based on source selected -->
-          <label for="url">Enter URL:</label>
-          <input type="text" id="url" name="url" placeholder="Enter the URL" required>
+                <!-- Conditional Input Fields -->
+                <div id="input-fields">
+                    <!-- MP3 file input -->
+                    <input type="file" id="mp3-upload" accept=".mp3" class="form-control" style="display:none;">
+                    
+                    <!-- YouTube URL input -->
+                    <input type="text" id="youtube-link" class="form-control" placeholder="YouTube URL here" style="display:none;">
 
-          <!-- File input for uploading local MP3 file -->
-          <div class="form-group mb-3">
-            <input type="file" id="file" name="file" accept=".mp3" class="form-control-file"  style="display: none;">
-            <button type="button" class="btn btn-secondary mt-2" onclick="document.getElementById('file').click()">Upload MP3 File</button>
-          </div>
-          <button type="submit" class="btn btn-primary">Convert & Add</button>
-        </form>
-      </div>
+                    <!-- Spotify URL input -->
+                    <input type="text" id="spotify-link" class="form-control" placeholder="Spotify URL here" style="display:none;">
+                </div>
 
-      <!-- Music Library Table -->
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Genre</th>
-            <th>File Type</th>
-            <th>Play/Remove</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each results}}
-          <tr>
-            <td>{{this.title}}</td>
-            <td>{{this.genre}}</td>
-            <td>{{this.filetype}}</td>
-            <td>
-              <!-- Play Button -->
-              <button class="btn btn-success btn-sm" onclick="playSong('{{this.fileUrl}}')">Play</button>
-              <!-- Delete Button -->
-              <form action="/delete/{{this.id}}" method="post" style="display:inline-block;">
-                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-              </form>
-            </td>
-          </tr>
-          {{else}}
-          <!-- Display an empty row if no results are available -->
-          <tr>
-            <td colspan="4" class="text-center">No music in library yet</td>
-          </tr>
-          {{/each}}
-        </tbody>
-      </table>
+                <!-- Song title and genre -->
+                <div class="form-group">
+                    <label for="file-name">Song title:</label>
+                    <input type="text" id="file-name" class="form-control" placeholder="Song title" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="file-genre">Song genre:</label>
+                    <input type="text" id="file-genre" class="form-control" placeholder="Song genre"  />
+                </div>
+
+                <!-- Submit button -->
+                <div class="text-center">
+                    <button type="post" id="submitBtn" class="btn-add">Upload</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="mt-5">
+            <div class="upload-section ">
+            <h3 class="header-title">{{username}}'s Library</h3>
+                <button id="openModalBtn" class="btn-add">Add a song to my library</button>
+            </div>
+
+            <!-- Music Library Table -->
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Genre</th>
+                        <th>File Type</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each results}}
+                    <tr>
+                        <td>{{this.id}}</td>
+                        <td>{{this.title}}</td>
+                        <td>{{this.genre}}</td>
+                        <td>{{this.filetype}}</td>
+                        <td class="text-center">
+                            <!-- Play Button -->
+                            <button class="btn btn-success btn-sm" onclick="playSong('{{this.fileUrl}}')" title="Play this song">
+                                <i class="fas fa-play"></i> Play
+                            </button>
+                            <!-- Delete Button -->
+                            <form action="/delete/{{this.id}}" method="post" style="display:inline-block;" title="Delete this song">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{else}}
+                    <!-- Display an empty row if no results are available -->
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">No music in library yet</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
     </div>
-  </div>
+
+    <script>
+        // Wait for DOM content to load before running the script
+        document.addEventListener('DOMContentLoaded', () => {
+            const openModalBtn = document.getElementById('openModalBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const modal = document.getElementById('uploadModal');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Open the modal when the 'Add song' button is clicked
+            openModalBtn.addEventListener('click', () => {
+                modal.style.display = 'block';
+            });
+
+            // Close the modal when the 'x' (close) button is clicked
+            closeModalBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            // Close the modal when the user clicks anywhere outside of the modal content
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+
+            // Handle the file upload form submission
+            submitBtn.addEventListener('click', () => {
+                const fileType = document.getElementById('file-type').value;
+                const fileName = document.getElementById('file-name').value;
+
+                // Display the chosen options (or process as needed)
+                console.log(`File Type: ${fileType}`);
+                console.log(`File Name: ${fileName || 'No name entered'}`);
+
+                // Close the modal after submission
+                modal.style.display = 'none';
+
+                // You can implement actual file upload logic here
+            });
+        });
+
+        // Wait for the DOM to load
+        document.addEventListener("DOMContentLoaded", function() {
+            const fileTypeSelect = document.getElementById("file-type");
+            const mp3Input = document.getElementById("mp3-upload");
+            const youtubeInput = document.getElementById("youtube-link");
+            const spotifyInput = document.getElementById("spotify-link");
+
+            // Add event listener for when the file type is changed
+            fileTypeSelect.addEventListener("change", function() {
+                // Hide all inputs first
+                mp3Input.style.display = "none";
+                youtubeInput.style.display = "none";
+                spotifyInput.style.display = "none";
+
+                // Show the corresponding input based on the selection
+                if (fileTypeSelect.value === "mp3") {
+                    mp3Input.style.display = "block";
+                } else if (fileTypeSelect.value === "youtube") {
+                    youtubeInput.style.display = "block";
+                } else if (fileTypeSelect.value === "spotify") {
+                    spotifyInput.style.display = "block";
+                }
+            });
+
+            // Trigger change event on page load to show the initial input type
+            fileTypeSelect.dispatchEvent(new Event("change"));
+        });
+    </script>
 </body>

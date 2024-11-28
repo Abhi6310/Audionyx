@@ -1,30 +1,4 @@
-<div class="vis-container">
-  <!-- Visualizer -->
-  <div class="mt-5">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.3.0/simplex-noise.min.js"></script>
-    <link rel="stylesheet" href="../resources/css/visualizer.css"> 
-
-    <div id="visualiser">
-        <!-- Visualizer plays here-->
-    </div>
-
-    <div id="play-header">
-      <label for="audio" id="label">Select file or choose from your library</label>
-      <input type="file" id="audio" accept=".mp3">
-      <!-- Play icon (SVG) -->
-      <svg id="play-button" xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-play rounded-circle" viewBox="0 0 16 16" style="cursor: pointer;">
-        <path d="M10.804 8 5 4.633v6.734zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696z"/>
-      </svg>
-    </div>
-
-      <!-- Visualization will appear here -->
-    </div>
-  </div>
-</div>
-
-<!-- JavaScript for Play/Pause Functionality -->
-<script>
+// JavaScript for Play/Pause Functionality
   const playButton = document.getElementById('play-button');
   const audioElement = document.getElementById('audio');
   let audio = null;  // Will store the audio player instance
@@ -56,6 +30,4 @@
       playButton.innerHTML = `<path d="M10.804 8 5 4.633v6.734zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696z"/>`;  // Play icon path
     }
   });
-  
-</script>
 

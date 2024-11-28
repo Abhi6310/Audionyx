@@ -3,7 +3,7 @@ html, body {
     width: 100%;
     margin: 0;
     padding: 0;
-    background-color: rgb(52, 9, 52)!important; /* Entire page background color black */
+    background-color: rgb(52, 9, 52) !important; /* Entire page background color black */
     /* background-image: url(/Audionyx/AudionyxSource/src/resources/images/logo3.png) !important; */
     color: white; /* Text color white for the entire page */
     font-family: Arial, sans-serif; /* Set the font */
@@ -36,7 +36,7 @@ html, body {
 h2, h5 { 
     color: white; /* Ensure headings are white */
 }
-
+    
 .input-group, .form-group {
     margin-bottom: 15px;
     text-align: left;

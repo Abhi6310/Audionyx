@@ -1,15 +1,17 @@
 /* PAGE LAYOUT w/ PURPLE ANIMATION */
-body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background: linear-gradient(45deg, #d1a7f7, #8e44ad, #4b2e83, #2c1b56);
-    background-size: 200% 200%; /* Expands the background area for smooth transitions */
-    animation: gradientAnimation 15s ease infinite; /* Animation definition */
-    font-family: Arial, sans-serif;
+/* Apply the animated gradient to the entire body */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100vh; /* Full viewport height */
+  flex-direction: column; /* Stack navbar at the top and content below */
+  background: linear-gradient(45deg, rgb(52, 9, 52), rgb(40, 5, 62), rgb(52, 9, 52), rgb(40, 5, 62));
+  background-size: 200% 200%; /* Expands the background area for smooth transitions */
+  animation: gradientAnimation 15s ease infinite; /* Animation definition */
+  font-family: Arial, sans-serif;
 }
 
-  /* Keyframes for the animated gradient */
+/* Keyframes for the animated gradient */
 @keyframes gradientAnimation {
   0% {
     background-position: 0% 50%;
@@ -25,14 +27,9 @@ body {
 
 /* General Layout Styles */
 .library-container {
-  max-width: 1200px;
+  max-width: 1500px;
   margin: 0 auto;
   padding: 20px;
-}
-
-/* Section Styles */
-.mt-5 {
-  margin-top: 50px;
 }
 
 .upload-section {
@@ -45,14 +42,8 @@ body {
 
 .upload-section h3 {
   font-size: 2rem;
-  color: #5e2a8c;
-  margin-bottom: 20px;
-}
-
-.upload-section h5 {
-  font-size: 1.25rem;
-  color: #6c757d;
-  margin-bottom: 15px;
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  color: rgb(52, 9, 52);
 }
 
 .upload-section label {
@@ -91,25 +82,68 @@ body {
   background-color: #4b1f7a;
 }
 
-/* Custom File Upload Button */
-.btn-upload {
+
+/* Modal Styles */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; /* Enable scrolling if needed */
+  background-color: rgba(0, 0, 0, 0.75); /* Black with transparency */
+  padding-top: 60px;
+}
+
+.modal-content {
+  margin: 5% auto;
+  padding: 20px;
+  width: 80%;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  max-width: 500px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(74, 50, 111, .8);
+  border: 1px solid rgb(129, 26, 145,); /* Add a white border for better visibility */
+}
+
+.close {
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Button for adding new song */
+.btn-add {
+  background-color: rgb(78, 25, 78); /* Purple color */
+  border: 1px solid rgb(129, 26, 145);
+  color: white; /* White text */
+  padding: 8px 16px; /* Small padding */
+  border-radius: 30px; /* Fully rounded button */
+  font-size: 14px; /* Small font size */
+  text-align: center; /* Center the text */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
   display: inline-block;
-  background-color: #5e2a8c;
-  color: white;
-  font-size: 1rem;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  text-align: center;
-  border: none;
-  transition: background-color 0.3s ease;
-  margin-bottom: 15px;
+  margin: 5px;
 }
 
-.btn-upload:hover {
-  background-color: #4b1f7a;
+.btn-add:hover {
+  background-color: #883d76; /* Darker purple when hovered */
 }
 
-.upload-section input[type="file"]:hover {
-  cursor: pointer;
+.btn-add:focus {
+  outline: none; /* Remove focus outline */
 }

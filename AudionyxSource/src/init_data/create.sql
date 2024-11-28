@@ -22,6 +22,19 @@ CREATE TABLE users (
 );
 
 /*
+DROP TABLE IF EXISTS songs;
+CREATE TABLE songs (
+    id SERIAL PRIMARY KEY,                  -- Auto-incrementing ID for each song
+    title VARCHAR(255) NOT NULL,             -- Song title (text field)
+    genre VARCHAR(100),                     -- Genre of the song (text field, optional)
+    file_type ENUM('mp3', 'youtube', 'spotify') NOT NULL,   -- Type of file (mp3, youtube, spotify)
+    file_url VARCHAR(255),                   -- URL or path to the file or media (for youtube/spotify links or mp3 file)
+    username VARCHAR(50) NOT NULL,           -- Foreign key to reference the username (from users table)
+    FOREIGN KEY (username) REFERENCES users(username) -- Foreign key constraint referencing the 'username' in the users table
+);
+*/
+
+/*
 CREATE TABLE Users (
     username VARCHAR(50) PRIMARY KEY,
     password_hash VARCHAR(255) NOT NULL,

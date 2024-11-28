@@ -1,6 +1,7 @@
 <style>
   nav {
     background-color: #020013 !important;
+    position: fixed;
     padding: 10px 20px;
     display: flex;
     justify-content: space-between;
@@ -64,6 +65,11 @@
   .navbar a:hover {
     color: #843dc1; /* Dark Purple */
   }
+  .nav-username { 
+    font-size: 15px; 
+    color: #9338c7 !important;
+    transition: color 0.3s ease; /*transition time to purple on hover*/
+  }
 
 </style>
 
@@ -101,11 +107,11 @@
         <!-- Username -->
         <ul class="navbar-nav ms-auto">
           <li class="nav-item username">
-            <a class="nav-link"> -- {{username}} --</a>
+            <a class="nav-link"> [ {{username}} ] </a>
           </li>
           <!-- Logout -->
           <li class="nav-item">
-            <a class="nav-link" href="/logout">Logout</a>
+            <a class="nav-link nav-username" href="/logout">Logout</a>
           </li>
         </ul>
       </div>

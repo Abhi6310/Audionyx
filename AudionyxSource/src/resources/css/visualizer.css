@@ -1,0 +1,84 @@
+/* Apply the animated gradient to the entire body */
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh; /* Full viewport height */
+  display: flex; /* Flexbox to center content */
+  justify-content: center; /* Horizontally center content */
+  align-items: center; /* Vertically center content */
+  flex-direction: column; /* Stack navbar at the top and content below */
+  background: linear-gradient(45deg, rgb(52, 9, 52), rgb(40, 5, 62), rgb(52, 9, 52), rgb(40, 5, 62));
+  background-size: 200% 200%; /* Expands the background area for smooth transitions */
+  animation: gradientAnimation 15s ease infinite; /* Animation definition */
+  font-family: Arial, sans-serif;
+}
+
+/* Keyframes for the animated gradient */
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Style for the navbar */
+.navbar {
+  position: fixed; /* Keep navbar at the top */
+  top: 0;
+  left: 0;
+  width: 100%; /* Full width */
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  z-index: 1000; /* Ensure the navbar is above other content */
+}
+
+/* Style for the visualizer container */
+.vis-container {
+  text-align: center;
+  color: white;
+  padding: 20px;
+  box-sizing: border-box;
+  margin-top: 80px; /* Space to account for the navbar height */
+}
+
+
+#play-header {
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px; /* Space between header and visualizer */
+  display: inline-block; /* Keeps the content inline */
+}
+
+#label {
+  margin-right: 10px;
+  font-weight: bold;
+  color: #fff;
+}
+
+input[type="file"] {
+  padding: 5px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+input[type="file"]:hover {
+  background-color: #555;
+}
+
+#visualiser {
+  width: 1500px; /* Full width of the container */
+  height: 650px;
+  margin-top: 10px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
