@@ -1,14 +1,9 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library Page</title>
-    <!-- Link to your CSS file -->
+    <div class="library-container">
+     <!-- Link to your CSS file -->
     <link rel="stylesheet" href="../resources/css/librarystyle.css"> 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="library-container">
+
         <!-- Modal Structure -->
         <div id="uploadModal" class="modal">
             <div class="modal-content">
@@ -55,52 +50,49 @@
         </div>
 
         <!-- Upload Section -->
-        <div class="mt-5">
-            <div class="upload-section ">
-            <h3 class="header-title">{{username}}'s Library</h3>
-                <button id="openModalBtn" class="btn-add">Add a song to my library</button>
+            <div class="upload-container">
+              <h3 class="header-title">{{username}}'s Library
+              <button id="openModalBtn" class="btn-add">Add a song to my library</button></h3>
             </div>
-
-            <!-- Music Library Table -->
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Title</th>
-                        <th>Genre</th>
-                        <th>File Type</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each results}}
-                    <tr>
-                        <td>{{this.id}}</td>
-                        <td>{{this.title}}</td>
-                        <td>{{this.genre}}</td>
-                        <td>{{this.filetype}}</td>
-                        <td class="text-center">
-                            <!-- Play Button -->
-                            <button class="btn btn-success btn-sm" onclick="playSong('{{this.fileUrl}}')" title="Play this song">
-                                <i class="fas fa-play"></i> Play
-                            </button>
-                            <!-- Delete Button -->
-                            <form action="/delete/{{this.id}}" method="post" style="display:inline-block;" title="Delete this song">
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash-alt"></i> Delete
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    {{else}}
-                    <!-- Display an empty row if no results are available -->
-                    <tr>
-                        <td colspan="5" class="text-center text-muted">No music in library yet</td>
-                    </tr>
-                    {{/each}}
-                </tbody>
-            </table>
-        </div>
+          <!-- Music Library Table -->
+          <table class="table">
+              <thead>
+                  <tr>
+                      <th>#</th>
+                      <th>Title</th>
+                      <th>Genre</th>
+                      <th>File Type</th>
+                      <th class="text-center">Actions</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {{#each results}}
+                  <tr>
+                      <td>{{this.id}}</td>
+                      <td>{{this.title}}</td>
+                      <td>{{this.genre}}</td>
+                      <td>{{this.filetype}}</td>
+                      <td class="text-center">
+                          <!-- Play Button -->
+                          <button class="btn btn-success btn-sm" onclick="playSong('{{this.fileUrl}}')" title="Play this song">
+                              <i class="fas fa-play"></i> Play
+                          </button>
+                          <!-- Delete Button -->
+                          <form action="/delete/{{this.id}}" method="post" style="display:inline-block;" title="Delete this song">
+                              <button type="submit" class="btn btn-danger btn-sm">
+                                  <i class="fas fa-trash-alt"></i> Delete
+                              </button>
+                          </form>
+                      </td>
+                  </tr>
+                  {{else}}
+                  <!-- Display an empty row if no results are available -->
+                  <tr>
+                      <td colspan="5" class="text-center text-muted">No music in library yet</td>
+                  </tr>
+                  {{/each}}
+              </tbody>
+          </table>
     </div>
 
     <script>

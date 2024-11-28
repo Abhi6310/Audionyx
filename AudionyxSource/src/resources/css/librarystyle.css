@@ -1,10 +1,11 @@
 /* PAGE LAYOUT w/ PURPLE ANIMATION */
 /* Apply the animated gradient to the entire body */
-body, html {
+body {
   margin: 0;
   padding: 0;
-  height: 100vh; /* Full viewport height */
-  flex-direction: column; /* Stack navbar at the top and content below */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: linear-gradient(45deg, rgb(52, 9, 52), rgb(40, 5, 62), rgb(52, 9, 52), rgb(40, 5, 62));
   background-size: 200% 200%; /* Expands the background area for smooth transitions */
   animation: gradientAnimation 15s ease infinite; /* Animation definition */
@@ -13,17 +14,10 @@ body, html {
 
 /* Keyframes for the animated gradient */
 @keyframes gradientAnimation {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
-
 
 /* General Layout Styles */
 .library-container {
@@ -32,68 +26,38 @@ body, html {
   padding: 20px;
 }
 
-.upload-section {
-  background-color: #f8f9fa;
-  padding: 20px;
+/* Upload Section */
+.upload-container {
+  background-color: rgba(255, 255, 255, 0.398); /* Semi-transparent white */
+  padding: 15px; /* Corrected the typo here, using px */
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 40px;
+  display: flex;
+  justify-content: space-between; /* Ensures the button is aligned to the right */
+  align-items: center; /* Vertically aligns the text and button */
 }
 
-.upload-section h3 {
-  font-size: 2rem;
-  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-  color: rgb(52, 9, 52);
+.header-title {
+  font-size: 1.5rem;
+  font: bold;
+  color:rgb(78, 25, 78);
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  margin: 0; /* Remove default margin from h3 */
+  padding: 0; /* Remove padding if any */
 }
-
-.upload-section label {
-  font-size: 1rem;
-  color: #333;
-  margin-bottom: 5px;
-  display: block;
-}
-
-.upload-section select, 
-.upload-section input[type="text"] {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
-}
-
-.upload-section input[type="file"]:focus {
-  border-color: #5e2a8c;
-}
-
-.upload-section button[type="submit"] {
-  background-color: #5e2a8c;
-  color: white;
-  font-size: 1.1rem;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.upload-section button[type="submit"]:hover {
-  background-color: #4b1f7a;
-}
-
 
 /* Modal Styles */
 .modal {
-  display: none; /* Hidden by default */
+  display: none;
   position: fixed;
-  z-index: 1; /* Sit on top */
+  z-index: 1;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: auto; /* Enable scrolling if needed */
-  background-color: rgba(0, 0, 0, 0.75); /* Black with transparency */
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.75);
   padding-top: 60px;
 }
 
@@ -101,12 +65,13 @@ body, html {
   margin: 5% auto;
   padding: 20px;
   width: 80%;
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   max-width: 500px;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  background: rgba(74, 50, 111, 0.8);
+  border: 1px solid rgb(129, 26, 145);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  background: rgba(74, 50, 111, .8);
-  border: 1px solid rgb(129, 26, 145,); /* Add a white border for better visibility */
 }
+
 
 .close {
   color: #aaa;
@@ -122,28 +87,146 @@ body, html {
 .close:focus {
   color: black;
   text-decoration: none;
-  cursor: pointer;
 }
 
 /* Button for adding new song */
 .btn-add {
   background-color: rgb(78, 25, 78); /* Purple color */
   border: 1px solid rgb(129, 26, 145);
-  color: white; /* White text */
-  padding: 8px 16px; /* Small padding */
-  border-radius: 30px; /* Fully rounded button */
-  font-size: 14px; /* Small font size */
-  text-align: center; /* Center the text */
-  cursor: pointer; /* Change cursor to pointer on hover */
-  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+  color: white;
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
   display: inline-block;
   margin: 5px;
 }
 
 .btn-add:hover {
-  background-color: #883d76; /* Darker purple when hovered */
+  background-color: #883d76;
 }
 
 .btn-add:focus {
-  outline: none; /* Remove focus outline */
+  outline: none;
+}
+
+/* TABLE CSS */
+
+/* General Table Styles */
+.table {
+  width: 100%;
+  margin: 20px 0;
+  border-collapse: collapse;
+  background-color: transparent; /* Table background remains transparent */
+  border: none; /* No borders for the table */
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Header Style */
+.table th {
+  background-color: transparent;
+  color: #fff; /* White text for contrast */
+  padding: 16px 20px;
+  text-align: left;
+  font-weight: bold;
+  font-size: 16px;
+  border: none;
+}
+
+/* Row Styles */
+.table td {
+  padding: 14px 20px;
+  color: #fff;
+  font-size: 14px;
+  background-color: transparent;
+  border: none; /* No borders on table cells */
+}
+
+/* Striped Rows */
+.table tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.table tr:nth-child(odd) {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Hover Effect for Row */
+.table tr:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Empty Data Row Style */
+.table td[colspan="5"] {
+  color: #888;
+  font-style: italic;
+}
+
+/* Center Actions Column */
+.table td.text-center {
+  text-align: center;
+}
+
+/* Button Styling */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+/* Play Button */
+.btn-success {
+  background-color: #28a745;
+  border: none;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+/* Delete Button */
+.btn-danger {
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+/* Icon Style */
+.btn i {
+  margin-right: 5px;
+}
+
+/* Form for Delete Button */
+form {
+  display: inline-block;
+  margin-left: 5px; /* Slight space between buttons */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .table th, .table td {
+    padding: 8px;
+  }
+
+  .table td {
+    font-size: 14px;
+  }
+
+  .btn {
+    font-size: 12px;
+  }
 }
