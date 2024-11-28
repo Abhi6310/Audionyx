@@ -298,6 +298,31 @@ app.get('/mylibrary', (req, res) => {
 //   }
 // });
 
+// //Gets info from user table for audio
+// app.get('/project/:projectId', async (req, res) => {
+//   const projectId = req.params.projectId;
+
+//   try {
+//       //Using db.one to fetch base64 from database
+//       const result = await db.one(
+//           'SELECT base64_encoding FROM Projects WHERE project_id = $1',
+//           [projectId]
+//       );
+
+//       //Respond with the base64 input
+//       res.json({ base64Encoding: result.base64_encoding });
+//   } catch (error) {
+//       console.error('Error fetching base64 audio:', error);
+
+//       //Error handling
+//       if (error.received === 0) {
+//           res.status(404).json({ error: 'Project not found' });
+//       } else {
+//           res.status(500).json({ error: 'Server error' });
+//       }
+//   }
+// });
+
 // *********************** LOGOUT API ROUTE **************************
 
 app.get('/logout', (req, res) => {
