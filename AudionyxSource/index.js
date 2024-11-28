@@ -17,35 +17,23 @@ const fs = require('fs');
 // <!-- Connect to DB -->
 // *****************************************************
 
+// Express handlebars
 const hbs = handlebars.create({
   extname: 'hbs',
   layoutsDir: path.join(__dirname, 'src', 'views', 'layouts'),
   partialsDir: path.join(__dirname, 'src', 'views', 'partials'),
 });
 
-// Database configuration IF YOU ARE USING DOCKER TO HOST LOCALLY.
-// DO NOT PUSH WITH THIS CONFIG, IT WILL REMOVE OUR HOSTED WEBSITE
-/*
+
+// Database configuration
 const dbConfig = {
-  host: 'db',
+  host: process.env.HOST, // render cloud hosting, COMMENT TO HOST LOCALLY.
+  // host: 'db', UNCOMMENT TO HOST LOCALLY.
   port: 5432,
   database: process.env.POSTGRES_DB,
   user: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
 };
-*/
-
-// Database configuration FOR CLOUD HOSTING DEPLOYMENT
-
-const dbConfig = {
-  host: process.env.POSTGRES_HOST, 
-  port: 5432,  
-  database: process.env.POSTGRES_DB,
-  user: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD,
-};
-
-
 
 const db = pgp(dbConfig);
 
@@ -70,6 +58,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'src', 'resources')));
 app.use('/resources', express.static(path.join(__dirname, 'src', 'resources')));
+
 // Initialize session variables
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -394,12 +383,10 @@ app.get('/welcome', (req, res) => {
 // <!-- Start Server -->
 // *****************************************************
 
-// ONLY UNCOMMENT WHEN RUNNING LOCALLY, DO NOT PUSH PLEASE
-/*
 app.listen(3000, () => {
     console.log('Server is listening on port 3000');
 });
-*/
+
 
 // TESTING FROM LAB 11
 
