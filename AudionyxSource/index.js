@@ -24,16 +24,15 @@ const hbs = handlebars.create({
   partialsDir: path.join(__dirname, 'src', 'views', 'partials'),
 });
 
-
 // Database configuration
 const dbConfig = {
-  host: process.env.HOST, // render cloud hosting, COMMENT TO HOST LOCALLY.
-  // host: 'db', UNCOMMENT TO HOST LOCALLY.
-  port: 5432,
-  database: process.env.POSTGRES_DB,
-  user: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD,
+  host: 'db', // The service name defined in docker-compose.yml
+  port: 5432, // Default PostgreSQL port
+  database: process.env.POSTGRES_DB, // Users DB from the .env file
+  user: process.env.POSTGRES_USER, // PostgreSQL user
+  password: process.env.POSTGRES_PASSWORD, // PostgreSQL password
 };
+
 
 const db = pgp(dbConfig);
 
