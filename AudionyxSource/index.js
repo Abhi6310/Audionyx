@@ -13,6 +13,9 @@ const bcrypt = require('bcryptjs');
 const fs = require('fs');
 //const getBase64Encoding = require('./youtubeToMP3');
 
+app.use(bodyParser.json({ limit: '50mb' })); // Increase limit to 50MB
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
 // *****************************************************
 // <!-- Connect to DB -->
 // *****************************************************
@@ -123,6 +126,11 @@ app.post('/register', async (req, res) => {
     return res.status(400).json({ message: 'The username you entered exceeds the 50 character limit. Please choose a different username.' });
   }
 
+
+  const query1 = 'INSERT INTO Library (library_name) VALUES ($1) RETURNING *;';
+  db.any(query1, [
+    "test"
+  ])
 
   const hash_pass = await bcrypt.hash(req.body.password, 10);
   const query = 'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;';
@@ -317,6 +325,59 @@ app.get('/logout', (req, res) => {
   req.session.destroy();
   res.render('pages/logout', {
       message: "You have successfully been logged out!"
+  });
+});
+
+app.post('/api/save-audio', async (req, res) => {
+
+  const { projectName, description, base64Encoding, libraryId } = req.body;
+
+  // Validate that projectName is no longer than 255 characters
+  if (projectName.length > 255) {
+      return res.status(400).json({ message: 'The project name exceeds the 255-character limit. Please choose a shorter name.' });
+  }
+
+  // Validate that base64Encoding is not empty
+  if (!base64Encoding || base64Encoding.trim() === '') {
+      return res.status(400).json({ message: 'Audio data is required.' });
+  }
+  const query1 = `
+    SELECT * FROM projects;
+  `;
+  db.task('get-everything', task => {
+    return task.batch([task.any(query1)]);
+  })
+  .then(data => {
+    console.log("Data", data);
+  });
+  const query = `
+      INSERT INTO Projects (project_name, description, encoding, library_id) 
+      VALUES ($1, $2, $3, $4) 
+      RETURNING *;
+  `;
+
+  db.any(query, [
+      projectName,
+      description,
+      base64Encoding,
+      libraryId
+  ])
+  .then(data => {
+      // Positive case: Successfully saved audio
+      res.status(200).json({
+          message: 'Audio project successfully saved!',
+          project: data[0] // Return the saved project data
+      });
+  })
+  .catch(error => {
+      console.error('Error saving audio:', error);
+
+      // Handle database errors gracefully
+      if (error.code === '23503') { // Foreign key violation
+          return res.status(400).json({ message: 'Invalid library ID. Please provide a valid library reference.' });
+      }
+      
+      res.status(500).json({ message: 'Failed to save audio. Please try again later.' });
   });
 });
 

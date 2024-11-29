@@ -8,7 +8,7 @@ CREATE TABLE Projects (
     project_id SERIAL PRIMARY KEY,
     project_name VARCHAR(255) NOT NULL,
     description TEXT,
-    base64_encoding TEXT NOT NULL,
+    encoding TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     library_id INT,
     FOREIGN KEY (library_id) REFERENCES Library(library_id)

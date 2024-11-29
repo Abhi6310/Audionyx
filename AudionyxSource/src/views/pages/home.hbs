@@ -30,14 +30,40 @@
   let audio = null;  // Will store the audio player instance
 
   // Load the audio file when user selects it
-  document.getElementById('audio').addEventListener('change', function (event) {
+
+  document.getElementById('audio').addEventListener('change', async function (event) {
     const file = event.target.files[0];
     if (file) {
-      const fileURL = URL.createObjectURL(file);
-      audio = new Audio(fileURL);
-      audio.loop = false;  // Set whether the audio should loop
+        const reader = new FileReader();
+
+        reader.onload = async function () {
+            const base64Audio = reader.result.split(',')[1]; // Get Base64 data, removing the prefix
+            const projectData = {
+                projectName: "My Audio Project", // Replace with dynamic project name
+                description: "Sample description", // Replace with dynamic description
+                base64Encoding: base64Audio,
+                libraryId: 1 // Replace with the relevant library_id
+            };
+
+            // Send data to the server
+            const response = await fetch('/api/save-audio', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(projectData)
+            });
+
+            console.log("Response: ", response);
+
+            if (response.ok) {
+                console.log('Audio saved successfully!');
+            } else {
+                console.error('Error saving audio:', response.statusText);
+            }
+        };
+
+        reader.readAsDataURL(file); // Converts file to Base64 string
     }
-  });
+});
 
   // Play/pause functionality when play button (SVG) is clicked
   playButton.addEventListener('click', function () {
