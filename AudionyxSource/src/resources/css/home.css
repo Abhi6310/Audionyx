@@ -1,0 +1,103 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(45deg, rgb(52, 9, 52), rgb(40, 5, 62), rgb(52, 9, 52), rgb(40, 5, 62));
+    background-size: 200% 200%; /* Expands the background area for smooth transitions */
+    animation: gradientAnimation 15s ease infinite; /* Animation definition */
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Keyframes for the animated gradient */
+  @keyframes gradientAnimation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  /* Home Container */
+.home-container {
+    text-align: center;
+    padding: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Main Heading (h1) */
+h1 {
+    font-size: 3em;
+    color: rgb(169, 89, 181); /* Light pinkish color for main title */
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* Subheading (h2) */
+h2 {
+    font-size: 1.8em;
+    color: rgb(159, 115, 166); /* Soft purple for subheading */
+    margin-bottom: 20px;
+}
+
+/* Paragraph (p) */
+p {
+    font-size: 1.2em;
+    color: rgb(210, 210, 210); /* Light gray text for readability */
+    line-height: 1.6;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Features Section */
+.features {
+    background-color: rgb(30, 30, 30); /* Dark background to highlight the section */
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 30px;
+}
+
+.features h3 {
+    color: rgb(169, 89, 181); /* Purple for headings */
+}
+
+.features ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.features li {
+    font-size: 1.1em;
+    margin: 10px 0;
+    color: rgb(210, 210, 210); /* Light gray for list items */
+}
+
+/* Technologies Section */
+.technologies {
+    background-color: rgb(30, 30, 30); /* Dark background for technologies section */
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 30px;
+}
+
+.technologies h3 {
+    color: rgb(169, 89, 181); /* Purple for heading */
+}
+
+.technologies p {
+    font-size: 1.1em;
+    color: rgb(210, 210, 210); /* Light gray for text */
+}
+
+.technologies ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.technologies li {
+    font-size: 1.1em;
+    margin: 8px 0;
+    color: rgb(210, 210, 210); /* Light gray for list items */
+}

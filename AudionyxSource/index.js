@@ -249,10 +249,17 @@ app.get('/home', (req, res) => {
   res.render('pages/home', { title: 'Visualizer Home', username: req.session.user.username });
 });
 
+app.get('/visualizer', (req, res) => {
+  res.render('pages/visualizer', { title: 'Visualizer Home', username: req.session.user.username });
+});
+
+
 // *********************** MY LIBRARY API ROUTES **************************
 app.get('/home', (req, res) => {
   res.redirect('/mylibrary');  // Redirect to My Library if authenticated
 });
+
+
 
 app.get('/mylibrary', (req, res) => {
   res.render('pages/mylibrary', { title: 'My Library', username: req.session.user.username });

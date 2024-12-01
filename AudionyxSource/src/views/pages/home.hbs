@@ -1,87 +1,46 @@
-<div class="vis-container">
-  <!-- Visualizer -->
-  <div class="mt-5">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.3.0/simplex-noise.min.js"></script>
-    <link rel="stylesheet" href="../resources/css/visualizer.css"> 
 
-    <div id="visualiser">
-        <!-- Visualizer plays here-->
+    <link rel="stylesheet" href="../resources/css/home.css">
+    <div class="home-container">
+        <h1>Welcome to Audionyx!</h1>
+        <h2>Your Ultimate 3D Audio Visualizer</h2>
+
+        <p>Audionyx is an immersive 3D Audio Visualizer that dynamically visualizes audio from online media sources, using them to create stunning real-time visualizations by processing audio from various user-provided media links.</p>
+
+        <div class="features">
+            <h3>Features</h3>
+                <ul>
+                    <li>Real-Time Visualization: Transform audio characteristics into captivating 3D graphics.</li>
+                    <li>Cross-Platform Support: Accepts links from various online media sources (YouTube, Spotify, and locally).</li>
+                    <li>Dynamic Response: Visuals that respond to audio tempo, beats, and intensity.</li>
+                </ul>   
     </div>
-
-    <div id="play-header">
-      <label for="audio" id="label">Select file or choose from your library</label>
-      <input type="file" id="audio" accept=".mp3">
-      <!-- Play icon (SVG) -->
-      <svg id="play-button" xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-play rounded-circle" viewBox="0 0 16 16" style="cursor: pointer;">
-        <path d="M10.804 8 5 4.633v6.734zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696z"/>
-      </svg>
+    <div class="technologies">
+        <h3>Technologies Used</h3>
+        <p>This project utilizes several modern technologies to deliver its immersive experience:</p>
+        <ul>
+            <li><strong>Backend:</strong> 
+                <em>Express.js</em>, 
+                <em>Node.js</em>, 
+                <em>pg-promise</em>, 
+                <em>axios</em>, 
+                <em>express-session</em>, 
+                <em>bcryptjs</em>, 
+                and <em>express-handlebars</em>
+            </li>
+            <li><strong>Frontend:</strong> 
+                <em>JavaScript</em>, 
+                <em>Three.js</em> (for 3D rendering)
+            </li>
+            <li><strong>Development Tools:</strong> 
+                <em>Mocha</em>, 
+                <em>Chai</em>, 
+                <em>Chai-HTTP</em>, 
+                <em>npm-run-all</em>, 
+                <em>nodemon</em>
+            </li>
+            <li><strong>API & Media Integration:</strong> 
+                Uses <em>Axios</em> for making HTTP requests, enabling dynamic streaming of audio from media sources like YouTube and Spotify.
+            </li>
+        </ul>           
+            <p style="color: white;">For more information, see to the GitHub link at the bottom of this page.</p>
     </div>
-
-      <!-- Visualization will appear here -->
-    </div>
-  </div>
-</div>
-
-<!-- JavaScript for Play/Pause Functionality -->
-<script>
-  const playButton = document.getElementById('play-button');
-  const audioElement = document.getElementById('audio');
-  let audio = null;  // Will store the audio player instance
-
-  // Load the audio file when user selects it
-
-  document.getElementById('audio').addEventListener('change', async function (event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-
-        reader.onload = async function () {
-            const base64Audio = reader.result.split(',')[1]; // Get Base64 data, removing the prefix
-            const projectData = {
-                projectName: "My Audio Project", // Replace with dynamic project name
-                description: "Sample description", // Replace with dynamic description
-                base64Encoding: base64Audio,
-                libraryId: 1 // Replace with the relevant library_id
-            };
-
-            // Send data to the server
-            const response = await fetch('/api/save-audio', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(projectData)
-            });
-
-            console.log("Response: ", response);
-
-            if (response.ok) {
-                console.log('Audio saved successfully!');
-            } else {
-                console.error('Error saving audio:', response.statusText);
-            }
-        };
-
-        reader.readAsDataURL(file); // Converts file to Base64 string
-    }
-});
-
-  // Play/pause functionality when play button (SVG) is clicked
-  playButton.addEventListener('click', function () {
-    if (!audio) {
-      alert("Please pick a song to play.");
-      return;
-    }
-
-    if (audio.paused) {
-      audio.play();
-      // Switch to pause icon when playing
-      playButton.innerHTML = `<path d="M4 3h3v10H4zM9 3h3v10H9z"/>`;  // Pause icon path
-    } else {
-      audio.pause();
-      // Switch to play icon when paused
-      playButton.innerHTML = `<path d="M10.804 8 5 4.633v6.734zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696z"/>`;  // Play icon path
-    }
-  });
-  
-</script>
-
