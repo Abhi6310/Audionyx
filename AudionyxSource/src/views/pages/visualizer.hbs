@@ -66,11 +66,6 @@
 
   // Play/pause functionality when play button (SVG) is clicked
   playButton.addEventListener('click', function () {
-    if (!audio) {
-      alert("Please pick a song to play.");
-      return;
-    }
-
     if (audio.paused) {
       audio.play();
       // Switch to pause icon when playing

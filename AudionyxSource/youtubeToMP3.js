@@ -6,14 +6,16 @@
 //Here is a single command to install everything required on Debian based systems: sudo apt update && sudo apt install -y ffmpeg yt-dlp && npm install express fluent-ffmpeg
 //Not sure how the install will work on other computers
 
+// already declared in spotify
 const express = require('express'); //Used to create simple web server for testing
-const ffmpeg = require('fluent-ffmpeg'); //ffmpeg to handle audio processing
-const {spawn} = require('child_process'); //Create child process for yt-dlp
+//const ffmpeg = require('fluent-ffmpeg'); //ffmpeg to handle audio processing
+//const {spawn} = require('child_process'); //Create child process for yt-dlp
 const app = express();
-const ffmpegLocation = '/usr/bin/ffmpeg'; //Path to ffmpeg
+//const ffmpegLocation = '/usr/bin/ffmpeg'; //Path to ffmpeg
 
 //Convert video
-app.get('/convertVideo', (req, res) =>
+//changed from get to post
+app.post('/convertVideo', (req, res) =>
     {
     const videoId = 'YG3EhWlBaoI'; //Video ID from Youtube, change later for user input.
     const url = `https://www.youtube.com/watch?v=${videoId}`; //Make sure user input is correct
@@ -56,5 +58,7 @@ app.get('/convertVideo', (req, res) =>
     console.log('Base64 Encoded MP3:', base64Audio);//output string to console for testing
     });
     });
+/*
 const PORT = process.env.PORT || 3000;//Change to support docker later but currently set up for local testing 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+*/

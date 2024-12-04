@@ -23,7 +23,8 @@ const spotifyApi = new SpotifyWebApi({
 });
 
 //Spotify to MP3 endpoint
-app.get('/convertSpotify', async (req, res) => 
+//changed from get to post
+app.post('/convertSpotify', async (req, res) => 
     {
     const spotifyUrl = req.query.url;
     if (!spotifyUrl)
@@ -115,8 +116,11 @@ app.get('/convertSpotify', async (req, res) =>
     res.status(500).send('An unexpected error occurred.');
   }
 });
+
+/*
 const PORT = process.env.PORT || 3000; //Local server to get it working.
 app.listen(PORT, () => 
 {
     console.log(`Server is running on port ${PORT}`);
 });
+*/

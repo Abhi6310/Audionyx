@@ -136,6 +136,8 @@ function togglePlayPause() {
     source.stop();
     cancelAnimationFrame(animationId);
     isPlaying = false;
+    // Pause icon path
+    playButton.innerHTML = `<path d="M4 3h3v10H4zM9 3h3v10H9z"/>`;
     console.log("Audio paused");
   } else {
     //Restarting audio and visualiser
@@ -149,8 +151,11 @@ function togglePlayPause() {
     
     render();
     isPlaying = true;
+    // Play icon
+    playButton.innerHTML = `<path d="M10.804 8 5 4.633v6.734zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696z"/>`;
     console.log("Audio playing");
   }}
+
   //Helper function to reset visualiser
   function resetVisualizer() {
     //Reset the sphere

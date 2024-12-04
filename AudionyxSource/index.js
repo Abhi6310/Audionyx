@@ -10,11 +10,12 @@ const pgp = require('pg-promise')();
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
+const ffmpeg = require('fluent-ffmpeg'); // ffmpeg to handle audio processing
+const SpotifyWebApi = require('spotify-web-api-node'); // For Spotify API
+const ffmpegLocation = '/usr/bin/ffmpeg'; // Path to ffmpeg
 const fs = require('fs');
-//const getBase64Encoding = require('./youtubeToMP3');
 
-app.use(bodyParser.json({ limit: '50mb' })); // Increase limit to 50MB
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+//const getBase64Encoding = require('./youtubeToMP3');
 
 // *****************************************************
 // <!-- Connect to DB -->
@@ -75,7 +76,7 @@ app.use('/resources', express.static(path.join(__dirname, 'src/resources')));
 // <!-- API Routes -->
 // *****************************************************
 
-// Opening Screen to Login!
+// Opening Screen after Login!
 app.get('/', (req, res) => {
   res.redirect('/mylibrary'); 
 });
@@ -125,12 +126,6 @@ app.post('/register', async (req, res) => {
   if (username.length > 50) {
     return res.status(400).json({ message: 'The username you entered exceeds the 50 character limit. Please choose a different username.' });
   }
-
-
-  const query1 = 'INSERT INTO Library (library_name) VALUES ($1) RETURNING *;';
-  db.any(query1, [
-    "test"
-  ])
 
   const hash_pass = await bcrypt.hash(req.body.password, 10);
   const query = 'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;';
@@ -231,8 +226,6 @@ app.post('/login', (req, res) => {
     });
 });
 
-
-
 // *********************** AUTHENTICATION MIDDLEWARE ***************************
 const auth = (req, res, next) => {
   if (!req.session.user) {
@@ -245,86 +238,50 @@ const auth = (req, res, next) => {
 app.use(auth);
 
 // *********************** HOME API ROUTES **************************
+// clicking home nav link
 app.get('/home', (req, res) => {
   res.render('pages/home', { title: 'Visualizer Home', username: req.session.user.username });
 });
 
+// clicking visualizer testing link
 app.get('/visualizer', (req, res) => {
   res.render('pages/visualizer', { title: 'Visualizer Home', username: req.session.user.username });
 });
-
 
 // *********************** MY LIBRARY API ROUTES **************************
 app.get('/home', (req, res) => {
   res.redirect('/mylibrary');  // Redirect to My Library if authenticated
 });
 
-
-
+// Fetch user-specific songs when loading the library
 app.get('/mylibrary', (req, res) => {
-  res.render('pages/mylibrary', { title: 'My Library', username: req.session.user.username });
+  const userId = req.session.user.username;  // Get logged-in user's username
+  const query = `
+    SELECT * FROM Projects
+    JOIN Library ON Library.library_id = Projects.library_id
+    WHERE Library.user_id = $1;
+  `;
+  
+  db.any(query, [userId])
+    .then(data => {
+      // Render the library page with the user's songs
+      res.render('pages/mylibrary', { 
+        title: 'My Library', 
+        username: req.session.user.username,
+        results: data // Send songs specific to the logged-in user
+      });
+    })
+    .catch(err => {
+      console.error(err); // Log the error for debugging
+      // Return an error page with a message or render an error view
+      res.render('pages/mylibrary', {
+        title: 'My Library',
+        username: req.session.user.username,
+        error: 'Failed to fetch your songs. Please try again later.'
+      });
+    });
 });
 
-// app.post('/create-project', auth, async (req, res) => {
-//   const { projectName, description, libraryName } = req.body; // Input from the client
-//   const username = req.session.user.username; // Current logged-in user
-  
-//   try {
-//     // Step 1: Check or create the library
-//     let libraryId;
-
-//     const libraryQuery = 'SELECT library_id FROM Library WHERE library_name = $1;';
-//     const libraryResult = await db.any(libraryQuery, [libraryName]);
-
-//     if (libraryResult.length > 0) {
-//       libraryId = libraryResult[0].library_id;
-//     } else {
-//       const newLibraryQuery = 'INSERT INTO Library (library_name) VALUES ($1) RETURNING library_id;';
-//       const newLibraryResult = await db.one(newLibraryQuery, [libraryName]);
-//       libraryId = newLibraryResult.library_id;
-//     }
-
-//     // Step 2: Get the Base64 encoding from the external file
-//     const base64Encoding = await getBase64Encoding();
-
-//     // Step 3: Insert the project into the database
-//     const projectQuery = `
-//       INSERT INTO Projects (project_name, description, base64_encoding, library_id) 
-//       VALUES ($1, $2, $3, $4) RETURNING project_id;
-//     `;
-//     const projectResult = await db.one(projectQuery, [projectName, description, base64Encoding, libraryId]);
-
-//     res.status(200).json({ message: 'Project created successfully!', projectId: projectResult.project_id });
-//   } catch (error) {
-//     console.error('Error creating project:', error);
-//     res.status(500).json({ message: 'Error creating project', error: error.message });
-//   }
-// });
-
-// //Gets info from user table for audio
-// app.get('/project/:projectId', async (req, res) => {
-//   const projectId = req.params.projectId;
-
-//   try {
-//       //Using db.one to fetch base64 from database
-//       const result = await db.one(
-//           'SELECT base64_encoding FROM Projects WHERE project_id = $1',
-//           [projectId]
-//       );
-
-//       //Respond with the base64 input
-//       res.json({ base64Encoding: result.base64_encoding });
-//   } catch (error) {
-//       console.error('Error fetching base64 audio:', error);
-
-//       //Error handling
-//       if (error.received === 0) {
-//           res.status(404).json({ error: 'Project not found' });
-//       } else {
-//           res.status(500).json({ error: 'Server error' });
-//       }
-//   }
-// });
 
 // *********************** LOGOUT API ROUTE **************************
 
@@ -335,105 +292,206 @@ app.get('/logout', (req, res) => {
   });
 });
 
+// *********************** CONVERTERS **************************
+
+// Using Node-fetch API. Dynamically imported due to strange errors.
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+
+// Spotify API credentials
+const spotifyApi = new SpotifyWebApi({
+    clientId: '2ebf735cd56a46189a2558fe30c1733e',
+    clientSecret: '460c2c3aaacc4e6cb737563dbc27d053'
+});
+
+// Spotify to MP3 conversion endpoint
+app.post('/convertSpotify', async (req, res) => {
+    const spotifyUrl = req.query.url;
+    if (!spotifyUrl) {
+        return res.status(400).send('Please provide a Spotify URL.');
+    }
+
+    const trackId = spotifyUrl.split('track/')[1];
+    if (!trackId) {
+        return res.status(400).send('Wrong Spotify URL.');
+    }
+
+    try {
+        // Login to Spotify API
+        const data = await spotifyApi.clientCredentialsGrant();
+        spotifyApi.setAccessToken(data.body['access_token']);
+
+        // Getting track details from Spotify's API
+        const trackData = await spotifyApi.getTrack(trackId);
+        const { name, artists } = trackData.body;
+        const artistName = artists[0].name;
+        const title = `${artistName} - ${name}`;
+        console.log(`Searching for: ${title}`); // Logging
+
+        // Searching YouTube for the track
+        const searchQuery = encodeURIComponent(`${artistName} ${name}`);
+        const searchUrl = `https://www.youtube.com/results?search_query=${searchQuery}`;
+        const searchResponse = await fetch(searchUrl);
+        const searchText = await searchResponse.text();
+
+        // Get first video ID from search results on YouTube
+        const videoIdMatch = searchText.match(/"videoId":"(.*?)"/);
+        if (!videoIdMatch) {
+            return res.status(404).send('Could not find the song on YouTube.');
+        }
+        const videoId = videoIdMatch[1];
+        const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+        // Set headers for the HTTP response to ensure proper audio download
+        res.setHeader('Content-disposition', `attachment; filename="${title}.mp3"`);
+        res.setHeader('Content-type', 'audio/mpeg');
+
+        // yt-dlp: Use yt-dlp to download audio (not ytdl-core)
+        const ytDlpProcess = spawn('yt-dlp', ['-f', 'bestaudio', '-o', '-', youtubeUrl]);
+
+        ytDlpProcess.stderr.on('data', data => {
+            console.error(`yt-dlp error: ${data}`);
+        });
+
+        ytDlpProcess.on('error', err => {
+            console.error('Error spawning yt-dlp:', err);
+            res.status(500).send('Error fetching video with yt-dlp');
+        });
+
+        // Convert audio using ffmpeg and pipe it to response
+        const ffmpegProcess = ffmpeg(ytDlpProcess.stdout)
+            .setFfmpegPath(ffmpegLocation)
+            .withAudioCodec('libmp3lame')
+            .toFormat('mp3')
+            .on('start', commandLine => console.log('FFmpeg command:', commandLine))
+            .on('progress', progress => console.log('Processing:', progress))
+            .on('stderr', stderrLine => console.log('Stderr output:', stderrLine))
+            .on('end', () => {
+                console.log('MP3 conversion and encoding finished.');
+                res.send('MP3 conversion and encoding finished. Check console for output.');
+            })
+            .on('error', err => {
+                console.error('Error during MP3 conversion:', err);
+                res.status(500).send({ error: 'Error during MP3 conversion' });
+            });
+
+        // Output MP3 data as a Base64 string
+        let mp3Data = [];
+        ffmpegProcess.pipe()
+            .on('data', chunk => mp3Data.push(chunk)) // Collect data in chunks
+            .on('end', () => {
+                const base64Audio = Buffer.concat(mp3Data).toString('base64');
+                console.log('Base64 Encoded MP3:', base64Audio); // Output Base64 for testing
+            });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('An unexpected error occurred.');
+    }
+});
+
+// YouTube video to MP3 conversion endpoint
+app.post('/convertVideo', (req, res) => {
+    const videoId = 'YG3EhWlBaoI'; // Example Video ID from YouTube, replace later with user input
+    const url = `https://www.youtube.com/watch?v=${videoId}`;
+
+    // yt-dlp: Use yt-dlp to download audio
+    const ytDlpProcess = spawn('yt-dlp', ['-f', 'bestaudio', '-o', '-', url]);
+
+    ytDlpProcess.stderr.on('data', data => {
+        console.error(`yt-dlp error: ${data}`);
+    });
+
+    ytDlpProcess.on('error', err => {
+        console.error('Error with yt-dlp:', err);
+        res.status(500).send('Error fetching video with yt-dlp');
+    });
+
+    // Convert audio using ffmpeg and pipe it to response
+    const ffmpegProcess = ffmpeg(ytDlpProcess.stdout)
+        .setFfmpegPath(ffmpegLocation)
+        .withAudioCodec('libmp3lame')
+        .toFormat('mp3')
+        .on('start', commandLine => console.log('FFmpeg command:', commandLine))
+        .on('progress', progress => console.log('Processing:', progress))
+        .on('stderr', stderrLine => console.log('Stderr output:', stderrLine))
+        .on('end', () => {
+            console.log('MP3 conversion and encoding finished.');
+            res.send('MP3 conversion and encoding finished. Check console for output.');
+        })
+        .on('error', err => {
+            console.error('Error during MP3 conversion:', err);
+            res.status(500).send({ error: 'Error during MP3 conversion' });
+        });
+
+    // Output MP3 data as a Base64 string
+    let mp3Data = [];
+    ffmpegProcess.pipe()
+        .on('data', chunk => mp3Data.push(chunk)) // Collect data in chunks
+        .on('end', () => {
+            const base64Audio = Buffer.concat(mp3Data).toString('base64');
+            console.log('Base64 Encoded MP3:', base64Audio); // Output Base64 for testing
+        });
+});
+
+// Uncomment to start the server locally
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => {
+//     console.log(`Server is running on port ${PORT}`);
+// });
+
+
+
+// *********************** UPLOAD AND SAVING AUDIO API ROUTES **************************
+
+app.post('/add-song', (req, res) => {
+  const { songTitle, songGenre, songType } = req.body;
+  const url = songType === 'youtube' ? youtubeUrl : spotifyUrl;
+
+    const newSong = {
+      songTitle,
+      songGenre, 
+      fileType: songType,
+      url
+  };
+
+
+
+});
+
+// SAVING BASE64 AUDIO
 app.post('/api/save-audio', async (req, res) => {
+  const { projectName, base64Encoding, libraryId } = req.body;
 
-  const { projectName, description, base64Encoding, libraryId } = req.body;
-
-  // Validate that projectName is no longer than 255 characters
   if (projectName.length > 255) {
-      return res.status(400).json({ message: 'The project name exceeds the 255-character limit. Please choose a shorter name.' });
+      return res.status(400).json({ message: 'Project name exceeds 255 characters.' });
   }
 
-  // Validate that base64Encoding is not empty
   if (!base64Encoding || base64Encoding.trim() === '') {
       return res.status(400).json({ message: 'Audio data is required.' });
   }
-  const query1 = `
-    SELECT * FROM projects;
-  `;
-  db.task('get-everything', task => {
-    return task.batch([task.any(query1)]);
-  })
-  .then(data => {
-    console.log("Data", data);
-  });
+
   const query = `
-      INSERT INTO Projects (project_name, description, encoding, library_id) 
-      VALUES ($1, $2, $3, $4) 
+      INSERT INTO Projects (title, base64_encoding, library_id) 
+      VALUES ($1, $2, $3)
       RETURNING *;
   `;
 
-  db.any(query, [
-      projectName,
-      description,
-      base64Encoding,
-      libraryId
-  ])
-  .then(data => {
-      // Positive case: Successfully saved audio
+  try {
+      const data = await db.any(query, [projectName, base64Encoding, libraryId]);
+
       res.status(200).json({
           message: 'Audio project successfully saved!',
-          project: data[0] // Return the saved project data
+          project: data[0]
       });
-  })
-  .catch(error => {
+  } catch (error) {
       console.error('Error saving audio:', error);
 
-      // Handle database errors gracefully
-      if (error.code === '23503') { // Foreign key violation
-          return res.status(400).json({ message: 'Invalid library ID. Please provide a valid library reference.' });
-      }
-      
-      res.status(500).json({ message: 'Failed to save audio. Please try again later.' });
-  });
-});
-
-
-// ******** LIBRARY
-/*
-// POST route for uploading MP3 files
-app.post('/upload', upload.single('file'), (req, res) => {
-  const { title, genre } = req.body;
-  const fileUrl = `/uploads/${req.file.filename}`; // Path to the uploaded file
-
-  const newTrack = new Track({
-    title,
-    genre,
-    filetype: req.file.mimetype, 
-    fileUrl,
-  });
-
-  newTrack.save()
-    .then(() => res.redirect('/')) // Redirect back to the music library page after saving
-    .catch((err) => res.status(500).send('Error uploading file: ' + err));
-});
-
-// DELETE route for deleting a file
-app.post('/delete/:id', (req, res) => {
-  const trackId = req.params.id;
-
-  Track.findById(trackId)
-    .then(track => {
-      if (!track) {
-        return res.status(404).send('Track not found');
+      if (error.code === '23503') {
+          return res.status(400).json({ message: 'Invalid library ID.' });
       }
 
-      // Delete the file from the server
-      const filePath = path.join(__dirname, 'uploads', path.basename(track.fileUrl));
-      require('fs').unlink(filePath, (err) => {
-        if (err) {
-          return res.status(500).send('Error deleting file: ' + err);
-        }
-
-        // Delete the track from the database
-        Track.findByIdAndDelete(trackId)
-          .then(() => res.redirect('/')) // Redirect back to the music library page after deleting
-          .catch((err) => res.status(500).send('Error deleting track from database: ' + err));
-      });
-    })
-    .catch((err) => res.status(500).send('Error finding track: ' + err));
+      res.status(500).json({ message: 'Failed to save audio. Please try again.' });
+  }
 });
-*/
 
 
 // *****************************************************
