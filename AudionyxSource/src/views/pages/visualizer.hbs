@@ -1,4 +1,4 @@
-<div class="vis-container">
+{{!-- <div class="vis-container">
   <!-- Visualizer -->
   <div class="mt-5">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
@@ -78,4 +78,33 @@
   });
   
 </script>
+ --}}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Visualizer</title>
+    <link rel="stylesheet" href="./../../resources/css/visualizer.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
+</head>
+<body>
+    <div id="visualiser" style="width: 100vw; height: 100vh; overflow: hidden; background-color: black;"></div>
+
+    <script src="/resources/js/visualizer.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const projectId = new URLSearchParams(window.location.search).get('projectID');
+        if (typeof fetchAndVisualizeAudio === "function") {
+            fetchAndVisualizeAudio(projectId);
+        } else {
+            console.error("fetchAndVisualizeAudio is not defined. Ensure visualizer.js is loaded.");
+        }
+    });
+</script>
+</body>
+</html>
+
 
