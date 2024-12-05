@@ -4,6 +4,7 @@
 
 const express = require('express'); 
 const app = express();
+const { spawn } = require('child_process');
 const handlebars = require('express-handlebars');
 const path = require('path');
 const pgp = require('pg-promise')();
@@ -11,12 +12,16 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const ffmpeg = require('fluent-ffmpeg'); // ffmpeg to handle audio processing
+const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
+const ytdl = require('youtube-dl-exec');
 const SpotifyWebApi = require('spotify-web-api-node'); // For Spotify API
 const ffmpegLocation = '/usr/bin/ffmpeg'; // Path to ffmpeg
 const fs = require('fs');
 
 //const getBase64Encoding = require('./youtubeToMP3');
-
+ffmpeg.setFfmpegPath(ffmpegInstaller.path);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 // *****************************************************
 // <!-- Connect to DB -->
 // *****************************************************
@@ -127,10 +132,6 @@ app.post('/register', async (req, res) => {
     return res.status(400).json({ message: 'The username you entered exceeds the 50 character limit. Please choose a different username.' });
   }
 
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
   const hash_pass = await bcrypt.hash(req.body.password, 10);
   const query = 'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;';
   db.any(query, [
@@ -145,12 +146,6 @@ app.post('/register', async (req, res) => {
 
     // ORIGINAL, COMMENT WHEN TESTING
     // /*
-    const query1 = 'INSERT INTO Library (library_id, library_name) VALUES ($1, $2) RETURNING *;';
-    db.any(query1, [
-      username,
-      username + "'s Library"
-    ])
-
     res.render('pages/login', {
       message: 'Account successfully created!'
     });
@@ -399,48 +394,66 @@ app.post('/convertSpotify', async (req, res) => {
 });
 
 // YouTube video to MP3 conversion endpoint
-app.post('/convertVideo', (req, res) => {
-    const videoId = 'YG3EhWlBaoI'; // Example Video ID from YouTube, replace later with user input
-    const url = `https://www.youtube.com/watch?v=${videoId}`;
 
-    // yt-dlp: Use yt-dlp to download audio
-    const ytDlpProcess = spawn('yt-dlp', ['-f', 'bestaudio', '-o', '-', url]);
+app.post('/convertVideo', async (req, res) => {
+  const { videoId } = req.body;
 
-    ytDlpProcess.stderr.on('data', data => {
-        console.error(`yt-dlp error: ${data}`);
-    });
+  if (!videoId) {
+      return res.status(400).json({ error: 'Video ID is required.' });
+  }
 
-    ytDlpProcess.on('error', err => {
-        console.error('Error with yt-dlp:', err);
-        res.status(500).send('Error fetching video with yt-dlp');
-    });
+  const url = `https://www.youtube.com/watch?v=${videoId}`;
+  const tempAudioFile = `/tmp/${videoId}.m4a`;
+  const tempOutputFile = `/tmp/${videoId}.mp3`;
 
-    // Convert audio using ffmpeg and pipe it to response
-    const ffmpegProcess = ffmpeg(ytDlpProcess.stdout)
-        .setFfmpegPath(ffmpegLocation)
-        .withAudioCodec('libmp3lame')
-        .toFormat('mp3')
-        .on('start', commandLine => console.log('FFmpeg command:', commandLine))
-        .on('progress', progress => console.log('Processing:', progress))
-        .on('stderr', stderrLine => console.log('Stderr output:', stderrLine))
-        .on('end', () => {
-            console.log('MP3 conversion and encoding finished.');
-            res.send('MP3 conversion and encoding finished. Check console for output.');
-        })
-        .on('error', err => {
-            console.error('Error during MP3 conversion:', err);
-            res.status(500).send({ error: 'Error during MP3 conversion' });
-        });
+  console.log(`Starting conversion for video ID: ${videoId}`);
 
-    // Output MP3 data as a Base64 string
-    let mp3Data = [];
-    ffmpegProcess.pipe()
-        .on('data', chunk => mp3Data.push(chunk)) // Collect data in chunks
-        .on('end', () => {
-            const base64Audio = Buffer.concat(mp3Data).toString('base64');
-            console.log('Base64 Encoded MP3:', base64Audio); // Output Base64 for testing
-        });
+  try {
+      // Use youtube-dl-exec to download the audio file
+      await ytdl(url, {
+          output: tempAudioFile,
+          format: 'bestaudio',
+      });
+
+      // Convert the audio file to MP3 with ffmpeg
+      ffmpeg(tempAudioFile)
+          .audioCodec('libmp3lame')
+          .format('mp3')
+          .on('start', (cmd) => console.log(`FFmpeg started with command: ${cmd}`))
+          .on('progress', (progress) => console.log(`Processing: ${progress.timemark}`))
+          .on('end', () => {
+              console.log('FFmpeg process completed successfully.');
+
+              // Read the MP3 file and return it as a Base64 string
+              const base64Audio = fs.readFileSync(tempOutputFile).toString('base64');
+              res.json({ base64Audio });
+
+              // Clean up temporary files
+              fs.unlinkSync(tempAudioFile);
+              fs.unlinkSync(tempOutputFile);
+          })
+          .on('error', (err) => {
+              console.error('FFmpeg error:', err);
+              res.status(500).json({ error: 'Error during MP3 conversion.' });
+
+              // Clean up temporary files on error
+              fs.unlinkSync(tempAudioFile);
+              if (fs.existsSync(tempOutputFile)) {
+                  fs.unlinkSync(tempOutputFile);
+              }
+          })
+          .save(tempOutputFile);
+  } catch (error) {
+      console.error('Error with video download or processing:', error);
+      res.status(500).json({ error: 'Error downloading or processing video.' });
+
+      // Clean up the temporary file if it exists
+      if (fs.existsSync(tempAudioFile)) {
+          fs.unlinkSync(tempAudioFile);
+      }
+  }
 });
+
 
 // Uncomment to start the server locally
 // const PORT = process.env.PORT || 3000;
