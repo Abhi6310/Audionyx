@@ -1,46 +1,80 @@
-
-    <link rel="stylesheet" href="../resources/css/home.css">
+<!-- Hero Section -->
     <div class="home-container">
-        <h1>Welcome to Audionyx!</h1>
-        <h2>Your Ultimate 3D Audio Visualizer</h2>
+    <link rel="stylesheet" href="../resources/css/home.css">
+ 
+    <header class="bg-primary text-white text-center py-5">
+        <div class="container">
+            <h1 class="display-4 home-title">Welcome to Audionyx</h1>
+            <p class="lead lucinda">Your 3D Visual Audio Experience</p>
+            <h6 class="lucinda">Developed by: Alyssa, Abhi, Agam, Connor, and Hunter!</h2>
+        </div>
+    </header>
+ 
+    <!-- Features Section -->
+    <section id="features" class="py-5">
+        <div class="container text-center">
+            <p class="section-description text-white lucinda">
+                Our application is a web-based audio visualizer that is built using three.js. Offering users the ability to experience their music through visuals, the core functionality of our application transforms audio files into dynamic 3D visuals that react to the music. By leveraging three.js and WebGL, the application creates real-time animations that are interactive and offer an immersive experience.
+            </p>
+            <p class="section-description text-white lucinda">
+                To add to the visual experience, the application allows users to create their own accounts where they can upload and store their own music. Each account links users to their own songs, which lets them manage and replay their music within the visualizer. This added functionality adds a personalization element to the application by giving users full control over their audio collection, greatly increasing the value of our application.
+            </p>
+        </div>
+    </section>
 
-        <p>Audionyx is an immersive 3D Audio Visualizer that dynamically visualizes audio from online media sources, using them to create stunning real-time visualizations by processing audio from various user-provided media links.</p>
-
-        <div class="features">
-            <h3>Features</h3>
-                <ul>
-                    <li>Real-Time Visualization: Transform audio characteristics into captivating 3D graphics.</li>
-                    <li>Cross-Platform Support: Accepts links from various online media sources (YouTube, Spotify, and locally).</li>
-                    <li>Dynamic Response: Visuals that respond to audio tempo, beats, and intensity.</li>
-                </ul>   
-    </div>
-    <div class="technologies">
-        <h3>Technologies Used</h3>
-        <p>This project utilizes several modern technologies to deliver its immersive experience:</p>
-        <ul>
-            <li><strong>Backend:</strong> 
-                <em>Express.js</em>, 
-                <em>Node.js</em>, 
-                <em>pg-promise</em>, 
-                <em>axios</em>, 
-                <em>express-session</em>, 
-                <em>bcryptjs</em>, 
-                and <em>express-handlebars</em>
-            </li>
-            <li><strong>Frontend:</strong> 
-                <em>JavaScript</em>, 
-                <em>Three.js</em> (for 3D rendering)
-            </li>
-            <li><strong>Development Tools:</strong> 
-                <em>Mocha</em>, 
-                <em>Chai</em>, 
-                <em>Chai-HTTP</em>, 
-                <em>npm-run-all</em>, 
-                <em>nodemon</em>
-            </li>
-            <li><strong>API & Media Integration:</strong> 
-                Uses <em>Axios</em> for making HTTP requests, enabling dynamic streaming of audio from media sources like YouTube and Spotify.
-            </li>
-        </ul>           
-            <p style="color: white;">For more information, see to the GitHub link at the bottom of this page.</p>
+ 
+    <!-- Development FAQ -->
+        <div class="FAQ-container">    
+            <p class="header-tools">Tools and Methods used by our team!</p>
+         
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white, lucinda" style="font-weight: bold;">
+                            Development Tools
+                        </div>
+                        <div class="card-body">
+                            <p>Github's Version Control System</p>
+                            <p>Built in Visual Studio Code's IDE</p>
+                            <p>Express.js</p>
+                            <p>Docker for containerization</p>
+                            <p>Node.js</p>
+                            <p>Render for deployment</p>
+                            <p>Mocha and Chai for testing</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white, lucinda" style="font-weight: bold;">
+                            Front-end
+                        </div>
+                        <div class="card-body">
+                            <p>HTML</p>
+                            <p>Handlebars</p>
+                            <p>CSS</p>
+                            <p>Bootstrap</p>
+                            <p>Javascript</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white, lucinda" style="font-weight: bold;">
+                            Back-end
+                        </div>
+                        <div class="card-body">
+                            <p>PostgresSQL</p>
+                            <p>Three.js</p>
+                            <p>Javascript</p>
+                            <p>Python</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+ 
+    <!-- Bootstrap JS (Optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
     </div>

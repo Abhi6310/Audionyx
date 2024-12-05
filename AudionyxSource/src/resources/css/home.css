@@ -1,103 +1,110 @@
-body {
+/* Override bg-primary class */
+.bg-primary {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+  
+  body {
     margin: 0;
     padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
     background: linear-gradient(45deg, rgb(52, 9, 52), rgb(40, 5, 62), rgb(52, 9, 52), rgb(40, 5, 62));
     background-size: 200% 200%; /* Expands the background area for smooth transitions */
     animation: gradientAnimation 15s ease infinite; /* Animation definition */
     font-family: Arial, sans-serif;
   }
   
-  /* Keyframes for the animated gradient */
-  @keyframes gradientAnimation {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-  /* Home Container */
-.home-container {
-    text-align: center;
-    padding: 30px;
-    max-width: 1000px;
-    margin: 0 auto;
+    /* Home Container */
+
+     
+    /* Override bg-primary class */
+    .bg-primary {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+      }
+      
+      .home-title {
+        font-size: 3rem;
+        color: whitesmoke;
+        text-align: center;
+        font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        font-weight: bold;
+        margin: 0;
+        padding: 20px;
+        transition: color 0.3s, transform 0.3s;
+      }
+      
+      .custom-header:hover {
+        color: #ff5722;                   /* Change color on hover */
+        transform: scale(1.1);            /* Slightly enlarge text */
+      }
+
+  /* Card Styling */
+.card {
+  border: none; /* Remove default card border */
+  background-color: rgba(255, 255, 255, 0.15); /* Slightly darker background for cards */
+  color: #fff; /* Set text color to white */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Soft shadow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Main Heading (h1) */
-h1 {
-    font-size: 3em;
-    color: rgb(169, 89, 181); /* Light pinkish color for main title */
-    margin-bottom: 20px;
-    font-weight: bold;
+.card:hover {
+  transform: scale(1.05); /* Slightly enlarge on hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* Stronger shadow on hover */
 }
 
-/* Subheading (h2) */
-h2 {
-    font-size: 1.8em;
-    color: rgb(159, 115, 166); /* Soft purple for subheading */
-    margin-bottom: 20px;
+/* Card Header */
+.card-header {
+  background-color: rgba(255, 255, 255, 0.1); /* Use the same background color as bg-primary */
+  color: #fff; /* Set text color to white */
+  font-weight: bold;
+  border-radius: 10px 10px 0 0; /* Rounded top corners */
 }
 
-/* Paragraph (p) */
-p {
-    font-size: 1.2em;
-    color: rgb(210, 210, 210); /* Light gray text for readability */
-    line-height: 1.6;
-    max-width: 900px;
-    margin: 0 auto;
+/* Card Body */
+.card-body {
+  padding: 20px;
+  font-size: 1.1rem; /* Slightly larger text for readability */
+  color: #f5f5f5; /* Light grey text */
 }
 
-/* Features Section */
-.features {
-    background-color: rgb(30, 30, 30); /* Dark background to highlight the section */
-    padding: 20px;
-    border-radius: 8px;
-    margin-top: 30px;
+/* Card Text */
+.card-body p {
+  margin-bottom: 10px; /* Add space between paragraphs */
 }
 
-.features h3 {
-    color: rgb(169, 89, 181); /* Purple for headings */
+/* FAQ Container */
+.FAQ-container {
+  padding: 50px 0;
+  background-color: rgba(255, 255, 255, 0.05); /* Light transparent background for the FAQ section */
 }
 
-.features ul {
-    list-style-type: none;
-    padding-left: 0;
+/* Cards Text Color */
+.card-body p {
+  color: #e0e0e0; /* Slightly muted text color for the card's body */
 }
 
-.features li {
-    font-size: 1.1em;
-    margin: 10px 0;
-    color: rgb(210, 210, 210); /* Light gray for list items */
+/* Customize Button */
+.btn-primary {
+  background-color: #6a1b9a;
+  border-color: #6a1b9a;
+  color: white;
 }
 
-/* Technologies Section */
-.technologies {
-    background-color: rgb(30, 30, 30); /* Dark background for technologies section */
-    padding: 20px;
-    border-radius: 8px;
-    margin-top: 30px;
+.btn-primary:hover {
+  background-color: #9c4dcc;
+  border-color: #9c4dcc;
 }
 
-.technologies h3 {
-    color: rgb(169, 89, 181); /* Purple for heading */
+.lucinda, p {
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
-.technologies p {
-    font-size: 1.1em;
-    color: rgb(210, 210, 210); /* Light gray for text */
-}
-
-.technologies ul {
-    list-style-type: none;
-    padding-left: 0;
-}
-
-.technologies li {
-    font-size: 1.1em;
-    margin: 8px 0;
-    color: rgb(210, 210, 210); /* Light gray for list items */
+.header-tools {
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  padding-bottom: 5px;
 }
