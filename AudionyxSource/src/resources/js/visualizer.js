@@ -1,67 +1,75 @@
-//Ensures DOM content is loaded before running the script
-document.addEventListener('DOMContentLoaded', () => {
-  //Audio input from DOM and visualiser area
-  const area = document.getElementById("visualiser");
-  const label = document.getElementById("label");
-  //Global Variables for the visualizer
-  let noise = new SimplexNoise();
-  let renderer;
-  let context;
-  let source;
-  let analyser;
-  let isPlaying = false;
-  let isVisualizerInitialized = false;
-  let animationId;
 
-  //Error handling for missing DOM elements
-   if (!area){
-      console.error("Visualiser area missing from DOM");
-      return;
-  }
-  if (!label){
-        console.error("Label missing from DOM");
-        return;
-  }
-  
-  //Fetching Audio from database
-async function fetchAndVisualizeAudio(projectId) {
-  try {
-    const response = await fetch(`/project/${projectId}`);
-    // Check if the response is OK (status 200)
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-  }
-    const data = await response.json();
-    console.log("Fetched Data:", data);
-    console.log("Audio Data:", data.base64Encoding);
-    if (data.base64Encoding) {
-      decodeAudioFromBase64(data.base64Encoding);
-    } else {
-      console.error("No base64 encoding");
-    }
-  } catch (error) {
-    console.error("Error getting base64 audio", error);
-  }
-}
-//Removes canvas elements to clear scene
-function clearScene() {
-  if (area && renderer) {
-    const canvas = renderer.domElement; //Gets canvas from Three JS
-    if (canvas && canvas.parentElement === area) {
-      area.removeChild(canvas); //Removes the canvas from DOM
-      renderer.dispose(); //Dispose the renderer
-      renderer = null; //Reset the renderer
-      console.log("Canvas and renderer cleared.");
-    }
-  } else {
-    console.error("Visualizer container (#visualiser) or renderer is not properly initialized.");
+let audioContext, audioAnalyser, audioSource, frequencyData;
+let particles, particlePositions, particleColors, plane;
+const particleCount = 500;
+const radius = 50;
+let globalScale = 1;
+let originalPositions;
+let lineGeometry, lineMaterial, lines;
+const maxConnections = 4;
+const connections = [];
+let audio;
+let isPlaying = false;
+let audioBuffer = null;
+let currentSource = "none";
+const simplexNoise = new SimplexNoise();
+document.getElementById("audioInput").addEventListener("change", handleAudioInput);
+document.getElementById("playPauseButton").addEventListener("click", togglePlayPause)
+
+window.onload = async () => {
+  const base64Audio = ""; //Replace with the actual Base64 audio string
+  await decodeAudioFromBase64(base64Audio);
+  startBase64Audio();
+};
+
+//Initialize the audio context and analyser
+function initAudioContext() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    audioAnalyser = audioContext.createAnalyser();
+    audioAnalyser.fftSize = 256;
+    frequencyData = new Uint8Array(audioAnalyser.frequencyBinCount);
   }
 }
 
-//Decodes the base64 audio input for the visualizer
-async function decodeAudioFromBase64(base64Input){
+//Handle audio file upload
+function handleAudioInput(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const urlObj = URL.createObjectURL(file);
+  initAudioContext();
+
+  const audio = new Audio(urlObj);
+  currentSource = "file";
+
+  audio.addEventListener("play", () => {
+    audioContext.resume();
+    isPlaying = true;
+  });
+
+  audio.addEventListener("pause", () => {
+    audioContext.suspend();
+    isPlaying = false;
+  });
+
+  // Set up the audio analyser
+  if (!audioAnalyser) {
+    audioAnalyser = audioContext.createAnalyser();
+    audioAnalyser.fftSize = 256;
+    frequencyData = new Uint8Array(audioAnalyser.frequencyBinCount);
+  }
+
+  const mediaSource = audioContext.createMediaElementSource(audio);
+  mediaSource.connect(audioAnalyser);
+  audioAnalyser.connect(audioContext.destination);
+
+  audio.play();
+}
+
+
+async function decodeAudioFromBase64(base64Input) {
   try {
-    //Validates base64 input
     const isBase64 = (str) => {
       try {
         return btoa(atob(str)) === str;
@@ -69,226 +77,394 @@ async function decodeAudioFromBase64(base64Input){
         return false;
       }
     };
-    //error handling
+
     if (!isBase64(base64Input)) {
       console.error("Invalid Base64 string");
       return;
     }
-  //decodes the original base 64 string to a binary string and store it as a typed array converted to bytes
-  const binaryAudio = atob(base64Input);
-  const len = binaryAudio.length;
-  const bytes = new Uint8Array(len);
-  //converting each character in the binary string to bytes
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryAudio.charCodeAt(i);
-  }
-  //Creating the audio context
-  if (!context) {
-    context = new (window.AudioContext || window.webkitAudioContext)();
-    console.log("Audio context created");
-  }
-  //Creating the audio context and decoding the binary data to the audiobuffer
-  const audioBuffer = await context.decodeAudioData(bytes.buffer); 
-  console.log("Audio buffer decoded");
 
-  //start visualiser
-  clearScene();
-  startVis(audioBuffer, context);
+    const binaryAudio = atob(base64Input);
+    const len = binaryAudio.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryAudio.charCodeAt(i);
+    }
 
-  if (audioBuffer) {
-        if (source) {
-          source.stop(); //Stops the previous source if it still exists
-        }
-        source = context.createBufferSource();
-        source.buffer = audioBuffer;
-        analyser = context.createAnalyser();
-        source.connect(analyser);
-        analyser.connect(context.destination);
-
-        source.start();
-        isPlaying = true;
+    initAudioContext();
+    audioBuffer = await audioContext.decodeAudioData(bytes.buffer);
+    console.log("Audio buffer decoded");
+    currentSource = "base64";
+    if (audioBuffer) {
+      if (audioSource) {
+        audioSource.stop();
       }
-  
-  //Marking the visualizer as initialized
-  isVisualizerInitialized = true;
-  console.log("Visualizer initialized");
-} catch (error) {
-  // Handle Specific Errors
-  if (error.name === "Encoding Error") {
-    console.error("Decoding failed");
-    console.error("- Corrupted or invalid Base64 string");
-    console.error("- Incompatible audio format (expected MP3 or WAV)");
-  } else {
-    console.error("Unexpected error during audio decoding:", error);
+      audioSource = audioContext.createBufferSource();
+      audioSource.buffer = audioBuffer;
+      audioAnalyser = audioContext.createAnalyser();
+      audioAnalyser.fftSize = 256
+      frequencyData = new Uint8Array(audioAnalyser.frequencyBinCount);
+      audioSource.connect(audioAnalyser);
+      audioAnalyser.connect(audioContext.destination);
+
+      audioSource.start(0);
+    }
+  } catch (error) {
+    console.error("Error decoding Base64 audio:", error);
   }
 }
+
+async function fetchBase64Audio(projectId) {
+  try {
+    const response = await fetch(`/project/${projectId}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.base64Encoding) {
+      await decodeAudioFromBase64(data.base64Encoding);
+    } else {
+      console.error("No Base64 encoding found in the response");
+    }
+  } catch (error) {
+    console.error("Error fetching Base64 audio:", error);
+  }
 }
 
-//Helper to toggle play/pause
+function playPause(event) {
+  const file = event.target.files[0];
+  if (!file) {return};
+  //creates url for the file
+  const urlObj = URL.createObjectURL(file);
+  audio = document.getElementById("audio-player");
+  audio.src = urlObj;
+
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    audioAnalyser = audioContext.createAnalyser();
+    audioAnalyser.fftSize = 256;
+    frequencyData = new Uint8Array(audioAnalyser.frequencyBinCount);
+  }
+
+  const audio = new Audio(urlObj);
+  const mediaElementSource = audioContext.createMediaElementSource(audio);
+  mediaElementSource.connect(audioAnalyser);
+  audioAnalyser.connect(audioContext.destination);
+
+  audio.addEventListener("play", () => {
+    isPlaying = true;
+  });
+  audio.addEventListener("pause", () => {
+    isPlaying = false;
+  });
+
+  audio.play();
+
+  //Handling when song ends
+  audio.addEventListener("ended", () => {
+    URL.revokeObjectURL(urlObj);
+  });
+  audio.addEventListener("play", () => {
+    audioContext.resume();
+  });
+  //suspend context on pause
+  audio.addEventListener("pause", () => {
+    audioContext.suspend();
+  });
+
+}
+// Start Base64 audio playback
+function startBase64Audio() {
+  if (!audioBuffer) {
+    console.error("No Base64 audio buffer available");
+    return;
+  }
+
+  if (audioSource) {
+    audioSource.stop();
+  }
+
+  audioSource = audioContext.createBufferSource();
+  audioSource.buffer = audioBuffer;
+
+  audioSource.connect(audioAnalyser);
+  audioAnalyser.connect(audioContext.destination);
+
+  audioSource.start(0);
+  isPlaying = true;
+
+  audioSource.onended = () => {
+    isPlaying = false;
+  };
+}
+
 function togglePlayPause() {
-  if (!context || !source) {
-    console.error("Audio context or source is not initialized.");
+  if (!audioContext) {
+    console.error("Audio context is not initialized");
+    return;
+  }
+
+  if (currentSource === "none") {
+    console.error("No audio source selected");
     return;
   }
 
   if (isPlaying) {
-    //Stop the audio and visualiser
-    source.stop();
-    cancelAnimationFrame(animationId);
-    isPlaying = false;
-    // Pause icon path
-    playButton.innerHTML = `<path d="M4 3h3v10H4zM9 3h3v10H9z"/>`;
-    console.log("Audio paused");
+    if (audioSource) {
+      audioSource.stop();
+      isPlaying = false;
+    }
+  } else if (currentSource === "base64" && audioBuffer) {
+    startBase64Audio();
   } else {
-    //Restarting audio and visualiser
-    const newSource = context.createBufferSource();
-    newSource.buffer = source.buffer;
-    newSource.connect(analyser);
-    analyser.connect(context.destination);
-    newSource.start(0);
-    //Updates the new source and restarts visualiser
-    source = newSource; 
-    
-    render();
-    isPlaying = true;
-    // Play icon
-    playButton.innerHTML = `<path d="M10.804 8 5 4.633v6.734zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696z"/>`;
-    console.log("Audio playing");
-  }}
-
-  //Helper function to reset visualiser
-  function resetVisualizer() {
-    //Reset the sphere
-    sphere.geometry.dispose(); // Dispose of the old geometry
-    const geometry = new THREE.IcosahedronGeometry(20, 3);
-    sphere.geometry = geometry;
-
-    //Reset every vertex to original position
-    sphere.geometry.verticesNeedUpdate = true;
-    sphere.geometry.computeVertexNormals();
-    sphere.geometry.computeFaceNormals();
-
-    console.log("Visualizer reset");
+    console.error("No audio to play from the current source");
   }
-  //Play/Pause functionality when clicking on the visualiser
-  area.addEventListener('click', async () => {
-    if (!isVisualizerInitialized) {
-      await fetchAndVisualizeAudio(1); //Fetches and visualises audio
-      render();
-    } else {
-      // If initialized, toggle play/stop
-      togglePlayPause();
-    }
+}
+
+initializeVisualizer();
+animate();
+
+function initializeVisualizer() {
+  //Scene setup
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+  
+  //Light setup
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+  scene.add(ambientLight);
+
+  const pointLight = new THREE.PointLight(0xffffff, 1.5, 100);
+  pointLight.position.set(0, 10, 10);
+  scene.add(pointLight);
+
+  //MESH setup
+  const planeGeometry = new THREE.PlaneGeometry(800, 800, 20, 20);
+  const planeMaterial = new THREE.MeshLambertMaterial({color: 0x6904ce, side: THREE.DoubleSide, wireframe: true,});
+  plane = new THREE.Mesh(planeGeometry, planeMaterial);
+  plane.rotation.x = -0.5 * Math.PI;
+  plane.position.set(0, -30, 0);
+  scene.add(plane);
+
+  //Verticies setup
+  particles = new THREE.BufferGeometry();
+  particlePositions = new Float32Array(particleCount * 3);
+  particleColors = new Float32Array(particleCount * 3);
+  originalPositions = new Float32Array(particleCount * 3); // Store the original positions
+
+  for (let i = 0; i < particleCount; i++) {
+    const theta = Math.random() * 2 * Math.PI;
+    const phi = Math.acos(Math.random() * 2 - 1);
+
+    const x = radius * Math.sin(phi) * Math.cos(theta);
+    const y = radius * Math.sin(phi) * Math.sin(theta);
+    const z = radius * Math.cos(phi);
+
+    particlePositions[i * 3] = x;
+    particlePositions[i * 3 + 1] = y;
+    particlePositions[i * 3 + 2] = z;
+
+    //Saving Original Positions
+    originalPositions[i * 3] = x;
+    originalPositions[i * 3 + 1] = y;
+    originalPositions[i * 3 + 2] = z;
+
+    //Initial colors for verticies
+    particleColors[i * 3] = 0.5;
+    particleColors[i * 3 + 1] = 0.5;
+    particleColors[i * 3 + 2] = 0.5;
+
+    connections[i] = []; // Initialize connections array for each particle
+  }
+  particles.setAttribute("position",new THREE.BufferAttribute(particlePositions, 3));
+  particles.setAttribute("color", new THREE.BufferAttribute(particleColors, 3));
+
+  const particleMaterial = new THREE.PointsMaterial({
+    size: 0.5,
+    opacity: 0.8,
+    blending: THREE.AdditiveBlending,
+    transparent: true,
+    depthWrite: false,
   });
 
-  //Starting the visualizer
-  function startVis(audioBuffer, context) {
-    if (isVisualizerInitialized) {
-      return;
-    }
-    analyser = context.createAnalyser();
-    analyser.fftSize = 512;
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
+  particleSystem = new THREE.Points(particles, particleMaterial);
+  scene.add(particleSystem);
 
-    clearScene();
-  
-    //Initiliazing the scene, camera, and renderer for the visualiser
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, area.clientWidth / area.clientHeight, 0.1, 1000);
-    camera.position.z = 100;
-    //Rendering the scene using WEBGL with antialiasing which will make rendering smoother
-    renderer = new THREE.WebGLRenderer({antialias: true});
-    renderer.setSize(area.clientWidth, area.clientHeight);
-    renderer.setClearColor("#a959b5");
-    area.appendChild(renderer.domElement);
-  
-    //Creating a geometry mesh with 20 sides
-    const geometry = new THREE.IcosahedronGeometry(20, 3);
-    const material = new THREE.MeshLambertMaterial({ color: "#0048ba", wireframe: true });
-    const sphere = new THREE.Mesh(geometry, material);
-  
-    //Adding a light source set above the mesh for lightning
-    const light = new THREE.DirectionalLight("#d6b6db", 0.8);
-    light.position.set(0, 50, 100);
-    scene.add(light);
-    scene.add(sphere);
-  
-    //Resize handler for renderer
-    window.addEventListener('resize', () => {
-      renderer.setSize(area.clientWidth, area.clientHeight);
-      camera.aspect = area.clientWidth / area.clientHeight;
-      camera.updateProjectionMatrix();
-    });
-  
-    //Function to stop rendering
-    function stopRender() {
-      if (animationId) {
-        cancelAnimationFrame(animationId); //Stops animation loop
-        animationId = null; //Reset animation ID
-      }
+  //Line Setup
+  lineGeometry = new THREE.BufferGeometry();
+  const linePositions = [];
+  const lineIndices = [];
+
+  for (let i = 0; i < particleCount; i++) {
+    const numConnections =
+      Math.floor(Math.random() * (maxConnections - 2 + 1)) + 2;
+
+    for (let j = 0; j < numConnections; j++) {
+      let targetIndex;
+      do {
+        targetIndex = Math.floor(Math.random() * particleCount);
+      } while (targetIndex === i || connections[i].includes(targetIndex));
+
+      connections[i].push(targetIndex);
+
+      linePositions.push(
+        particlePositions[i * 3],
+        particlePositions[i * 3 + 1],
+        particlePositions[i * 3 + 2],
+        particlePositions[targetIndex * 3],
+        particlePositions[targetIndex * 3 + 1],
+        particlePositions[targetIndex * 3 + 2]
+      );
+      lineIndices.push(
+        linePositions.length / 3 - 2,
+        linePositions.length / 3 - 1
+      );
     }
-    //Rendering out the 3D mesh based on frequency
-    render = function() {
-      analyser.getByteFrequencyData(dataArray);
-      //calculating initial frequency data
-      const lowerHalf = dataArray.slice(0, (dataArray.length / 2) - 1);
-      const upperHalf = dataArray.slice((dataArray.length / 2) - 1, dataArray.length - 1);
-      const lowerMax = max(lowerHalf);
-      const upperAvg = avg(upperHalf);
-      //Normalizing the values
-      const lowerMaxFr = lowerMax / lowerHalf.length;
-      const upperAvgFr = upperAvg / upperHalf.length;
-      //Rotates the sphere slightly in all directions to give an animated spinning effect
-      sphere.rotation.x += 0.001;
-      sphere.rotation.y += 0.003;
-      sphere.rotation.z += 0.005;
-      //Changing the mesh's parameters based on the frequency data which creates a warping effect
-      WarpSphere(sphere, modulate(Math.pow(lowerMaxFr, 0.8), 0, 1, 0, 8), modulate(upperAvgFr, 0, 1, 0, 4));
-      renderer.render(scene, camera);
-      //saves animation state
-      animationId = requestAnimationFrame(render);
-    };
-    //Helper for frequency data mesh warping
-    function WarpSphere(mesh, bassFrequency, trebleFrequency) {
-      //Iterates through each vertex of the mesh and applies a multiplier to the position
-      mesh.geometry.vertices.forEach(function (vertex, i) {
-        const offset = mesh.geometry.parameters.radius;
-        const amp = 7;
-        //Time for noise calculation
-        const time = window.performance.now();
-        //Normalizing it retains the general shape of the mesh
-        vertex.normalize();
-        //multiplier for noise frequency
-        const rf = 0.00001;
-        const distance = (offset + bassFrequency) + noise.noise3D(vertex.x + time * rf * 4, vertex.y + time * rf * 6, vertex.z + time * rf * 7) * amp * trebleFrequency * 2;
-        vertex.multiplyScalar(distance);
-      });
-      //Update mesh positions
-      mesh.geometry.verticesNeedUpdate = true;
-      mesh.geometry.computeVertexNormals();
-      mesh.geometry.computeFaceNormals();
-    }
-    //starting the rendering loop
-    render();
   }
-  
-  //Normalizes the value to a specific range 
-  function normalize(value, minValue, maxValue) {
-    return (value - minValue) / (maxValue - minValue);
-  }
-  //Scaling the value to a new range
-  function modulate(value, minValue, maxValue, outMin, outMax) {
-    const fr = normalize(value, minValue, maxValue);
-    const delta = outMax - outMin;
-    return outMin + (fr * delta);
-  }
-  //Calculates the average of an array
-  function avg(arr) {
-    return arr.reduce((sum, b) => sum + b) / arr.length;
-  }
-  //Calculates the max value of an array
-  function max(arr) {
-    return arr.reduce((a, b) => Math.max(a, b));
-  }
+
+  lineGeometry.setAttribute(
+    "position",
+    new THREE.BufferAttribute(new Float32Array(linePositions), 3)
+  );
+  lineGeometry.setIndex(
+    new THREE.BufferAttribute(new Uint16Array(lineIndices), 1)
+  );
+  lineMaterial = new THREE.LineBasicMaterial({
+    color: "white",
+    opacity: 0.05,
+    transparent: true,
   });
+  lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+  scene.add(lines);
+
+  //Set camera position
+  camera.position.z = 120;
+
+  //Setup audio input
+  const audioInput = document.getElementById("audioInput");
+  audioInput.addEventListener("change", handleAudioInput, false);
+
+  //Handle window resize
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  if (audioAnalyser && !audioAnalyser.paused) {
+    audioAnalyser.getByteFrequencyData(frequencyData);
+    //calculate avg frequency
+    let avgFrequency = 0;
+    for (let i = 0; i < frequencyData.length; i++) {
+      avgFrequency += frequencyData[i];
+    }
+    avgFrequency /= frequencyData.length;
+    //lower half
+    var lowerHalfArray = frequencyData.slice(0, (frequencyData.length/2) - 1);
+    var lowerAvg = avg(lowerHalfArray);
+    var lowerAvgFr = lowerAvg / lowerHalfArray.length;
+    //map avg frequency to scale
+    globalScale = 1 + (avgFrequency / 256);
+
+    for (let i = 0; i < particleCount; i++) {
+      const index = i * 3;
+      //Update particle positions
+      particlePositions[index] = originalPositions[index] * globalScale;
+      particlePositions[index + 1] = originalPositions[index + 1] * globalScale;
+      particlePositions[index + 2] = originalPositions[index + 2] * globalScale;
+      //Update colors
+      const colorIntensity = Math.min(globalScale * 0.5, 1);
+      particleColors[index] = colorIntensity * 0.5;
+      particleColors[index + 1] = 0.5 - colorIntensity * 0.2;
+      particleColors[index + 2] = colorIntensity * 1.0;
+  }
+  particles.attributes.position.needsUpdate = true;
+  particles.attributes.color.needsUpdate = true;
+
+  //Update lines in between
+  let lineIdx = 0;
+  const positions = lineGeometry.attributes.position.array;
+  for (let i = 0; i < particleCount/3; i++) {
+    const currentPos = [
+      particlePositions[i * 3],
+      particlePositions[i * 3 + 1],
+      particlePositions[i * 3 + 2],
+    ];
+
+    for (const targetIndex of connections[i]) {
+      positions[lineIdx * 6] = currentPos[0];
+      positions[lineIdx * 6 + 1] = currentPos[1];
+      positions[lineIdx * 6 + 2] = currentPos[2];
+      positions[lineIdx * 6 + 3] = particlePositions[targetIndex * 3];
+      positions[lineIdx * 6 + 4] = particlePositions[targetIndex * 3 + 1];
+      positions[lineIdx * 6 + 5] = particlePositions[targetIndex * 3 + 2];
+      lineIdx++;
+    }
+}
+  lineGeometry.attributes.position.needsUpdate = true;
+  }
+
+  if (plane) {
+    animateGround(plane, globalScale);
+  }
+  
+  particleSystem.rotation.y += 0.001;
+  particleSystem.rotation.x += 0.001;
+  lines.rotation.y += 0.001;
+  lines.rotation.x += 0.001;
+
+  renderer.render(scene, camera);
+
+}
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function animateGround(mesh, distortionFr) {
+  const position = mesh.geometry.attributes.position;
+  if (!position) return; //Safeguard if `position` is undefined
+
+  const vertex = new THREE.Vector3();
+  const amp = 2;
+  const time = Date.now();
+
+  for (let i = 0; i < position.count; i++) {
+    vertex.fromBufferAttribute(position, i);
+    const noiseValue = simplexNoise.noise2D(
+      vertex.x + time * 0.0003,
+      vertex.y + time * 0.0001
+    );
+    const distance = noiseValue * distortionFr * amp;
+    vertex.z = distance;
+    position.setXYZ(i, vertex.x, vertex.y, vertex.z);
+  }
+
+  position.needsUpdate = true;
+  mesh.geometry.computeVertexNormals();
+  }
+//Normalizes the value to a specific range 
+function normalize(value, minValue, maxValue) {
+  return (value - minValue) / (maxValue - minValue);
+}
+//Scaling the value to a new range
+function modulate(value, minValue, maxValue, outMin, outMax) {
+  const fr = normalize(value, minValue, maxValue);
+  const delta = outMax - outMin;
+  return outMin + (fr * delta);
+}
+//Calculates the average of an array
+function avg(arr) {
+  return arr.reduce((sum, b) => sum + b) / arr.length;
+}
+//Calculates the max value of an array
+function max(arr) {
+  return arr.reduce((a, b) => Math.max(a, b));
+}
