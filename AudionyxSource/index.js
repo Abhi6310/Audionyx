@@ -4,7 +4,6 @@
 
 const express = require('express'); 
 const app = express();
-const { spawn } = require('child_process');
 const handlebars = require('express-handlebars');
 const path = require('path');
 const pgp = require('pg-promise')();
@@ -12,16 +11,14 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const ffmpeg = require('fluent-ffmpeg'); // ffmpeg to handle audio processing
-const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
-const ytdl = require('youtube-dl-exec');
 const SpotifyWebApi = require('spotify-web-api-node'); // For Spotify API
 const ffmpegLocation = '/usr/bin/ffmpeg'; // Path to ffmpeg
 const fs = require('fs');
 
+app.use(bodyParser.json({ limit: '100mb' })); // Adjust the size as needed
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 //const getBase64Encoding = require('./youtubeToMP3');
-ffmpeg.setFfmpegPath(ffmpegInstaller.path);
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+
 // *****************************************************
 // <!-- Connect to DB -->
 // *****************************************************
@@ -131,7 +128,6 @@ app.post('/register', async (req, res) => {
   if (username.length > 50) {
     return res.status(400).json({ message: 'The username you entered exceeds the 50 character limit. Please choose a different username.' });
   }
-
   const hash_pass = await bcrypt.hash(req.body.password, 10);
   const query = 'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;';
   db.any(query, [
@@ -146,6 +142,12 @@ app.post('/register', async (req, res) => {
 
     // ORIGINAL, COMMENT WHEN TESTING
     // /*
+    const query1 = 'INSERT INTO Library (library_id, library_name) VALUES ($1, $2) RETURNING *;';
+    db.any(query1, [
+      username,
+      username + "'s Library"
+    ])
+
     res.render('pages/login', {
       message: 'Account successfully created!'
     });
@@ -249,9 +251,55 @@ app.get('/home', (req, res) => {
 });
 
 // clicking visualizer testing link
+// Render the visualizer page
 app.get('/visualizer', (req, res) => {
-  res.render('pages/visualizer', { title: 'Visualizer Home', username: req.session.user.username });
+  const projectID = req.query.projectID;
+
+  if (!projectID) {
+    return res.status(400).send('Project ID is required to view the visualizer.');
+  }
+
+  res.render('pages/visualizer', { 
+    title: 'Visualizer Home', 
+    username: req.session.user.username,
+    projectID: projectID 
+  });
 });
+
+app.get('/visualizer/:projectId', async (req, res) => {
+  console.log("Inside /visualizer/:projectId endpoint");
+  try {
+      const projectId = req.params.projectId;
+      console.log("Received Project ID:", projectId);
+
+      const query = 'SELECT base64_encoding FROM projects WHERE project_id = $1';
+      const values = [projectId];
+
+      console.log("Executing Query:", query);
+      console.log("With Values:", values);
+
+      const project = await db.query(query, values);
+
+      console.log("Query Result:", project);
+
+      // Access the base64 encoding from the first row
+      const base64Encoding = project;
+
+      if (!base64Encoding) {
+          console.error("No Base64 encoding found for the given Project ID.");
+          return res.status(404).json({ error: "Project not found or no Base64 encoding exists." });
+      }
+
+      console.log("Base64 Encoding Retrieved:", base64Encoding);
+
+      res.json({ base64Encoding });
+  } catch (error) {
+      console.error("Error fetching project data:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 
 // *********************** MY LIBRARY API ROUTES **************************
 app.get('/home', (req, res) => {
@@ -260,32 +308,38 @@ app.get('/home', (req, res) => {
 
 // Fetch user-specific songs when loading the library
 app.get('/mylibrary', (req, res) => {
-  const userId = req.session.user.username;  // Get logged-in user's username
+  const userId = req.session.user.username; // Get logged-in user's username
+  console.log("Fetching library for user:", userId); // Debug log
+
   const query = `
-    SELECT * FROM Projects
-    JOIN Library ON Library.library_id = Projects.library_id
-    WHERE Library.user_id = $1;
+      SELECT * FROM Projects
+      WHERE library_id = $1;
   `;
-  
+
   db.any(query, [userId])
-    .then(data => {
-      // Render the library page with the user's songs
-      res.render('pages/mylibrary', { 
-        title: 'My Library', 
-        username: req.session.user.username,
-        results: data // Send songs specific to the logged-in user
+      .then(data => {
+          console.log("Fetched library data:", data); // Debug log
+          res.render('pages/mylibrary', { 
+              title: 'My Library', 
+              username: userId,
+              results: data, // Send songs to the Handlebars template
+          });
+      })
+      .catch(err => {
+          console.error("Error fetching library:", err);
+          res.render('pages/mylibrary', {
+              title: 'My Library',
+              username: userId,
+              results: [], // Pass an empty array in case of an error
+              error: 'Failed to fetch your songs. Please try again later.',
+          });
       });
-    })
-    .catch(err => {
-      console.error(err); // Log the error for debugging
-      // Return an error page with a message or render an error view
-      res.render('pages/mylibrary', {
-        title: 'My Library',
-        username: req.session.user.username,
-        error: 'Failed to fetch your songs. Please try again later.'
-      });
-    });
 });
+
+
+
+
+
 
 
 // *********************** LOGOUT API ROUTE **************************
@@ -306,6 +360,28 @@ const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fet
 const spotifyApi = new SpotifyWebApi({
     clientId: '2ebf735cd56a46189a2558fe30c1733e',
     clientSecret: '460c2c3aaacc4e6cb737563dbc27d053'
+});
+
+app.post('/convertAudioToBase64', (req, res) => {
+  const { filePath } = req.body;
+
+  if (!filePath) {
+      return res.status(400).json({ message: 'File path is required.' });
+  }
+
+  let base64Data = '';
+  ffmpeg(filePath)
+      .toFormat('mp3')
+      .on('data', chunk => {
+          base64Data += chunk.toString('base64');
+      })
+      .on('end', () => {
+          res.status(200).json({ base64Encoding: base64Data });
+      })
+      .on('error', error => {
+          console.error('Error converting to Base64:', error);
+          res.status(500).json({ message: 'Failed to convert audio to Base64.' });
+      });
 });
 
 // Spotify to MP3 conversion endpoint
@@ -394,66 +470,48 @@ app.post('/convertSpotify', async (req, res) => {
 });
 
 // YouTube video to MP3 conversion endpoint
+app.post('/convertVideo', (req, res) => {
+    const videoId = 'YG3EhWlBaoI'; // Example Video ID from YouTube, replace later with user input
+    const url = `https://www.youtube.com/watch?v=${videoId}`;
 
-app.post('/convertVideo', async (req, res) => {
-  const { videoId } = req.body;
+    // yt-dlp: Use yt-dlp to download audio
+    const ytDlpProcess = spawn('yt-dlp', ['-f', 'bestaudio', '-o', '-', url]);
 
-  if (!videoId) {
-      return res.status(400).json({ error: 'Video ID is required.' });
-  }
+    ytDlpProcess.stderr.on('data', data => {
+        console.error(`yt-dlp error: ${data}`);
+    });
 
-  const url = `https://www.youtube.com/watch?v=${videoId}`;
-  const tempAudioFile = `/tmp/${videoId}.m4a`;
-  const tempOutputFile = `/tmp/${videoId}.mp3`;
+    ytDlpProcess.on('error', err => {
+        console.error('Error with yt-dlp:', err);
+        res.status(500).send('Error fetching video with yt-dlp');
+    });
 
-  console.log(`Starting conversion for video ID: ${videoId}`);
+    // Convert audio using ffmpeg and pipe it to response
+    const ffmpegProcess = ffmpeg(ytDlpProcess.stdout)
+        .setFfmpegPath(ffmpegLocation)
+        .withAudioCodec('libmp3lame')
+        .toFormat('mp3')
+        .on('start', commandLine => console.log('FFmpeg command:', commandLine))
+        .on('progress', progress => console.log('Processing:', progress))
+        .on('stderr', stderrLine => console.log('Stderr output:', stderrLine))
+        .on('end', () => {
+            console.log('MP3 conversion and encoding finished.');
+            res.send('MP3 conversion and encoding finished. Check console for output.');
+        })
+        .on('error', err => {
+            console.error('Error during MP3 conversion:', err);
+            res.status(500).send({ error: 'Error during MP3 conversion' });
+        });
 
-  try {
-      // Use youtube-dl-exec to download the audio file
-      await ytdl(url, {
-          output: tempAudioFile,
-          format: 'bestaudio',
-      });
-
-      // Convert the audio file to MP3 with ffmpeg
-      ffmpeg(tempAudioFile)
-          .audioCodec('libmp3lame')
-          .format('mp3')
-          .on('start', (cmd) => console.log(`FFmpeg started with command: ${cmd}`))
-          .on('progress', (progress) => console.log(`Processing: ${progress.timemark}`))
-          .on('end', () => {
-              console.log('FFmpeg process completed successfully.');
-
-              // Read the MP3 file and return it as a Base64 string
-              const base64Audio = fs.readFileSync(tempOutputFile).toString('base64');
-              res.json({ base64Audio });
-
-              // Clean up temporary files
-              fs.unlinkSync(tempAudioFile);
-              fs.unlinkSync(tempOutputFile);
-          })
-          .on('error', (err) => {
-              console.error('FFmpeg error:', err);
-              res.status(500).json({ error: 'Error during MP3 conversion.' });
-
-              // Clean up temporary files on error
-              fs.unlinkSync(tempAudioFile);
-              if (fs.existsSync(tempOutputFile)) {
-                  fs.unlinkSync(tempOutputFile);
-              }
-          })
-          .save(tempOutputFile);
-  } catch (error) {
-      console.error('Error with video download or processing:', error);
-      res.status(500).json({ error: 'Error downloading or processing video.' });
-
-      // Clean up the temporary file if it exists
-      if (fs.existsSync(tempAudioFile)) {
-          fs.unlinkSync(tempAudioFile);
-      }
-  }
+    // Output MP3 data as a Base64 string
+    let mp3Data = [];
+    ffmpegProcess.pipe()
+        .on('data', chunk => mp3Data.push(chunk)) // Collect data in chunks
+        .on('end', () => {
+            const base64Audio = Buffer.concat(mp3Data).toString('base64');
+            console.log('Base64 Encoded MP3:', base64Audio); // Output Base64 for testing
+        });
 });
-
 
 // Uncomment to start the server locally
 // const PORT = process.env.PORT || 3000;
@@ -465,56 +523,135 @@ app.post('/convertVideo', async (req, res) => {
 
 // *********************** UPLOAD AND SAVING AUDIO API ROUTES **************************
 
-app.post('/add-song', (req, res) => {
-  const { songTitle, songGenre, songType } = req.body;
+app.post('/add-song', async (req, res) => {
+  const { songTitle, songGenre, songType, youtubeUrl, spotifyUrl, base64Encoding, libraryId } = req.body;
+
+  if (!songTitle || !songGenre || !songType || !base64Encoding || !libraryId) {
+      return res.status(400).json({ message: 'All fields are required.' });
+  }
+
   const url = songType === 'youtube' ? youtubeUrl : spotifyUrl;
 
-    const newSong = {
-      songTitle,
-      songGenre, 
-      fileType: songType,
-      url
-  };
-
-
-
-});
-
-// SAVING BASE64 AUDIO
-app.post('/api/save-audio', async (req, res) => {
-  const { projectName, base64Encoding, libraryId } = req.body;
-
-  if (projectName.length > 255) {
-      return res.status(400).json({ message: 'Project name exceeds 255 characters.' });
-  }
-
-  if (!base64Encoding || base64Encoding.trim() === '') {
-      return res.status(400).json({ message: 'Audio data is required.' });
-  }
-
   const query = `
-      INSERT INTO Projects (title, base64_encoding, library_id) 
-      VALUES ($1, $2, $3)
+      INSERT INTO Projects (library_id, songTitle, songGenre, fileType, url, base64_encoding)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *;
   `;
 
   try {
-      const data = await db.any(query, [projectName, base64Encoding, libraryId]);
-
+      const data = await db.one(query, [libraryId, songTitle, songGenre, songType, url, base64Encoding]);
       res.status(200).json({
-          message: 'Audio project successfully saved!',
-          project: data[0]
+          message: 'Song successfully added!',
+          project: data,
       });
   } catch (error) {
-      console.error('Error saving audio:', error);
-
-      if (error.code === '23503') {
-          return res.status(400).json({ message: 'Invalid library ID.' });
-      }
-
-      res.status(500).json({ message: 'Failed to save audio. Please try again.' });
+      console.error('Error adding song:', error);
+      res.status(500).json({ message: 'Failed to add song. Please try again.' });
   }
 });
+
+
+app.get('/library', async (req, res) => {
+  try {
+      const query = 'SELECT * FROM Projects';
+      const results = await db.query(query);
+      res.render('library', { results: results.rows, title: 'Library' });
+  } catch (error) {
+      console.error('Error fetching projects:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+app.post('/api/save-audio', async (req, res) => {
+  const { songTitle, songGenre, base64Encoding } = req.body;
+  const libraryId = req.session.user.username; // Use the username as the library_id
+  const libraryName = `${libraryId}'s Library`; // You can customize this
+
+  console.log('Incoming payload:', req.body);
+
+  if (!songTitle || !songGenre || !base64Encoding) {
+      console.error('Missing required fields:', { songTitle, songGenre, base64Encoding });
+      return res.status(400).send({ error: 'Missing required fields.' });
+  }
+
+  try {
+      // Check if library_id exists in the Library table
+      const libraryExistsQuery = `
+          SELECT COUNT(*) FROM Library WHERE library_id = $1;
+      `;
+      const { count } = await db.one(libraryExistsQuery, [libraryId]);
+
+      // If the library_id doesn't exist, insert it
+      if (parseInt(count, 10) === 0) {
+          const insertLibraryQuery = `
+              INSERT INTO Library (library_id, library_name, user_id)
+              VALUES ($1, $2, $3);
+          `;
+          await db.none(insertLibraryQuery, [libraryId, libraryName, libraryId]);
+          console.log(`Library created for user: ${libraryId}`);
+      }
+
+      // Insert the new project
+      const insertProjectQuery = `
+          INSERT INTO Projects (library_id, songTitle, songGenre, fileType, base64_encoding)
+          VALUES ($1, $2, $3, 'mp3', $4) RETURNING *;
+      `;
+      const values = [libraryId, songTitle, songGenre, base64Encoding];
+
+      console.log('Executing query:', insertProjectQuery);
+      console.log('With values:', values);
+
+      const result = await db.one(insertProjectQuery, values);
+
+      console.log('Database insert successful:', result);
+
+      res.status(200).send({ success: true, project: result });
+  } catch (error) {
+      console.error('Error in /api/save-audio route:', error.message, error.stack);
+      res.status(500).send({ error: 'Internal server error while saving audio.' });
+  }
+});
+
+
+app.post('/delete/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+      const query = 'DELETE FROM Projects WHERE project_id = $1';
+      await db.query(query, [id]);
+
+      res.redirect('/library');
+  } catch (error) {
+      console.error('Error deleting project:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+app.get('/visualizer', async (req, res) => {
+  console.log("In visualizer");
+  const { projectID } = req.query;
+
+  if (!projectID) {
+      return res.status(400).send('No project ID provided.');
+  }
+
+  try {
+      // Fetch the project details using the projectID
+      const query = 'SELECT * FROM Projects WHERE project_id = $1';
+      const project = await db.one(query, [projectID]);
+
+      res.render('visualizer', {
+          title: 'Audio Visualizer',
+          projectID,
+          base64Encoding: project.base64_encoding, // Pass the Base64 data for visualization
+      });
+  } catch (error) {
+      console.error('Error fetching project:', error);
+      res.status(500).send('Failed to load the visualizer.');
+  }
+});
+
+
 
 
 // *****************************************************
@@ -539,3 +676,4 @@ app.listen(3000, () => {
 // TESTING FROM LAB 11
 
 // module.exports = app.listen(3000);
+
