@@ -127,6 +127,10 @@ app.post('/register', async (req, res) => {
     return res.status(400).json({ message: 'The username you entered exceeds the 50 character limit. Please choose a different username.' });
   }
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
   const hash_pass = await bcrypt.hash(req.body.password, 10);
   const query = 'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;';
   db.any(query, [
@@ -141,6 +145,12 @@ app.post('/register', async (req, res) => {
 
     // ORIGINAL, COMMENT WHEN TESTING
     // /*
+    const query1 = 'INSERT INTO Library (library_id, library_name) VALUES ($1, $2) RETURNING *;';
+    db.any(query1, [
+      username,
+      username + "'s Library"
+    ])
+
     res.render('pages/login', {
       message: 'Account successfully created!'
     });

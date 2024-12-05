@@ -1,4 +1,24 @@
+<<<<<<< Updated upstream
 -- Drop and create the 'users' table
+=======
+CREATE TABLE Library (
+    library_id VARCHAR(50) PRIMARY KEY,
+    library_name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Projects (
+    project_id SERIAL PRIMARY KEY,
+    project_name VARCHAR(255) NOT NULL,
+    description TEXT,
+    encoding TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    library_id VARCHAR(50),
+    FOREIGN KEY (library_id) REFERENCES Library(library_id)
+);
+
+/* TEMPORARY */
+>>>>>>> Stashed changes
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     username VARCHAR(50) PRIMARY KEY, -- username
