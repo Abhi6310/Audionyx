@@ -620,7 +620,7 @@ app.post('/delete/:id', async (req, res) => {
       const query = 'DELETE FROM Projects WHERE project_id = $1';
       await db.query(query, [id]);
 
-      res.redirect('/library');
+      res.redirect('/mylibrary');
   } catch (error) {
       console.error('Error deleting project:', error);
       res.status(500).send('Internal Server Error');

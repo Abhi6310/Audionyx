@@ -3,7 +3,7 @@ html, body {
     width: 100%;
     margin: 0;
     padding: 0;
-    background-color: rgb(52, 9, 52)!important; /* Entire page background color black */
+    background-color: rgb(52, 9, 52) !important; /* Entire page background color black */
     /* background-image: url(/Audionyx/AudionyxSource/src/resources/images/logo3.png) !important; */
     color: white; /* Text color white for the entire page */
     font-family: Arial, sans-serif; /* Set the font */
@@ -12,6 +12,7 @@ html, body {
 /* Ensure the body takes the full height of the viewport */
 
 .register-container {
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     background: rgba(0, 0, 0, 0.75); /* Semi-transparent background for login container */
     padding: 20px;
     border-radius: 8px;
@@ -22,13 +23,21 @@ html, body {
 }
 
 .login-button {
-    background-color: rgb(129, 26, 145);
+    background-color: rgb(169, 89, 181);
     color: white;
-}
-h2, h5 {
-    color: white; /* Ensure headings are white */
+    border: 1px solid transparent;
+    border-radius: 4px;
 }
 
+.login-button:hover {
+    background-color: rgb(139, 69, 161);  /* Slightly darker purple on hover */
+    color: white;
+}
+
+h2, h5 { 
+    color: white; /* Ensure headings are white */
+}
+    
 .input-group, .form-group {
     margin-bottom: 15px;
     text-align: left;
@@ -63,10 +72,13 @@ button {
     width: auto !important; /* Override the width settings for navbar/header */
 }
 
-/* Change login link color & hover */
+/* Change signup link color & hover */
 .login-link {
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
     color: #662d91; 
 }
 .login-link:hover {
     color: #800080; 
 }
+

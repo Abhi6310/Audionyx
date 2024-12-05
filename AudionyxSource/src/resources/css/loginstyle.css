@@ -12,6 +12,7 @@ html, body {
 /* Ensure the body takes the full height of the viewport */
 
 .login-container {
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     background: rgba(0, 0, 0, 0.75); /* Semi-transparent background for login container */
     padding: 20px;
     border-radius: 8px;
@@ -22,6 +23,7 @@ html, body {
 }
 
 .login-button {
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     background-color: rgb(169, 89, 181);
     color: white;
     border: 1px solid transparent;
@@ -74,8 +76,9 @@ button {
 /* Change signup link color & hover */
 .signup-link {
     color: #662d91; 
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
 }
 .signup-link:hover {
     color: #800080; 
 }
-

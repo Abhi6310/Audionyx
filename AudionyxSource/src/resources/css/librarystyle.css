@@ -66,7 +66,7 @@ body {
   padding: 20px;
   width: 80%;
   max-width: 500px;
-  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   background: rgba(74, 50, 111, 0.8);
   border: 1px solid rgb(129, 26, 145);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -93,15 +93,13 @@ body {
 .btn-add {
   background-color: rgb(78, 25, 78); /* Purple color */
   border: 1px solid rgb(129, 26, 145);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 30px;
-  font-size: 14px;
-  text-align: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  display: inline-block;
-  margin: 5px;
+  color: white; /* White text */
+  padding: 8px 16px; /* Small padding */
+  border-radius: 30px; /* Fully rounded button */
+  font-size: 14px; /* Small font size */
+  text-align: center; /* Center the text */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 
 .btn-add:hover {
