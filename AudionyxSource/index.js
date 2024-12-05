@@ -32,7 +32,8 @@ const hbs = handlebars.create({
 
 // Database configuration
 const dbConfig = {
-  host: 'db', // The service name defined in docker-compose.yml
+  host: process.env.HOST, // UNCOMMENT FOR RENDER HOSTING
+  // host: 'db', // UNCOMMMENT FOR LOCAL HOSTING
   port: 5432, // Default PostgreSQL port
   database: process.env.POSTGRES_DB, // Users DB from the .env file
   user: process.env.POSTGRES_USER, // PostgreSQL user
@@ -206,7 +207,7 @@ app.post('/login', (req, res) => {
         req.session.user = user;
         req.session.save();
         
-        res.redirect('/mylibrary');
+        res.redirect('/home');
 
       } else {
         res.render('pages/login', {
