@@ -75,10 +75,13 @@ input[type="file"]:hover {
   background-color: #555;
 }
 
+
 #visualiser {
-  width: 1500px; /* Full width of the container */
-  height: 650px;
-  margin-top: 10px;
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
+  width: 100vw;
+  height: 100vh; /* Adjust height as needed */
+  overflow: hidden;
+  background-color: black /* Ensure the div is displayed */
 }
+
+
+
