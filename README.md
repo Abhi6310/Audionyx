@@ -21,6 +21,7 @@ Audionyx is a course project created by five students at the University of Color
   - Weekly minutes with our TA, Chloe.
   - Weekly meeting notes with our development team.
   - Audionyx's project presentation, highlighting technologies used.
+  - Audionyx's project report.
   - Release notes.
 
 ### Technologies Used
