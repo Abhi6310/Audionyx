@@ -4,15 +4,15 @@ Audionyx is a course project created by five students at the University of Color
 
 **Try out our application!**: [https://audionyx.onrender.com](https://audionyx.onrender.com)
 
-### Running our application
-
-**Note**: If you choose to host this program locally, please note it has to install several dependencies that take upwards to ~500 seconds to fully install on each machine. Once installed, the program can be locally hosted using Docker, and should be fully functional.
-
 ### The 3D Audio Visualizer's Features:
 
 - **Input online media links**: Supports various platforms and file formats, such as local MP3 files, and YouTube links.
 - **Extract and analyze audio**: Dynamically processes audio waveforms and key audio characteristics including intensity, frequency, amplitude, and tempo.
 - **Generates a real-time 3D Visualization**: Displays an engaging 3D visualization that responds to the audio in real-time.
+
+### Running our application
+
+**Note**: If you choose to host this program locally, please note it has to install several dependencies that take upwards to ~500 seconds to fully install on each machine. Once installed, the program can be locally hosted using Docker, and should be fully functional.
 
 ### Directory Structure
 
