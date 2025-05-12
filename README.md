@@ -1,31 +1,78 @@
-
 # Audionyx
-Audionyx is a course project created by five students at the University of Colorado Boulder. It is an immersive 3D audio visualizer that dynamically generates real-time visualizations by processing audio from user-selected media links, or locally uploaded files.
 
-**Try out our application!**: [https://audionyx.onrender.com](https://audionyx.onrender.com)
+> **An immersive 3D audio visualizer**  
+> Course project by five students at the University of Colorado Boulder
 
-### The 3D Audio Visualizer's Features:
+**Live demo:** https://audionyx.onrender.com
 
-- **Input online media links**: Supports various platforms and file formats, such as local MP3 files, and YouTube links.
-- **Extract and analyze audio**: Dynamically processes audio waveforms and key audio characteristics including intensity, frequency, amplitude, and tempo.
-- **Generates a real-time 3D Visualization**: Displays an engaging 3D visualization that responds to the audio in real-time.
+---
 
-### Running our application
+## Table of Contents
 
-**Note**: If you choose to host this program locally, please note it has to install several dependencies that take upwards to ~500 seconds to fully install on each machine. Once installed, the program can be locally hosted using Docker, and should be fully functional.
+- [Overview](#overview)  
+- [Features](#features)  
+- [Architecture & Tech Stack](#architecture--tech-stack)  
+- [Getting Started](#getting-started)  
+  - [Prerequisites](#prerequisites)  
+  - [Local Install](#local-install)  
+  - [Docker](#docker)  
+- [Usage](#usage)  
+- [Directory Structure](#directory-structure)  
+- [Contributors](#contributors)  
+- [License](#license)  
 
-### Directory Structure
+---
 
-- **AudionyxSource**: Contains all source code for the program.
-- **MilestoneSubmissions**: Includes all work submitted for the course, such as:
-  - Weekly minutes with our TA, Chloe.
-  - Weekly meeting notes with our development team.
-  - Audionyx's project presentation, highlighting technologies used.
-  - Audionyx's project report.
-  - Release notes.
+## Overview
 
-### Technologies Used
+Audionyx is a real-time, browser-based 3D visualizer that:  
+1. **Loads audio** from YouTube links or local MP3 files  
+2. **Analyzes** waveform, intensity, frequency, amplitude & tempo  
+3. **Renders** an interactive Three.js scene synchronized to the beat  
 
-Details about the technologies used are included in the project presentation, which is located in the **MilestoneSubmissions** directory.
+---
 
+## Features
 
+- 🎵 **Input**  
+  - Paste YouTube or other media URLs  
+  - Upload local `.mp3` files  
+- 🔊 **Audio Analysis**  
+  - Real-time FFT for frequency bands  
+  - Beat-detection & amplitude tracking  
+- 🌐 **Visualization**  
+  - Dynamic 3D geometry (particles, bars, meshes)  
+  - Shader-driven effects responding to audio  
+- ⚙️ **Deployment**  
+  - One-click on Render.com  
+  - Docker-ready for local hosting  
+
+---
+
+## Architecture & Tech Stack
+
+- **Server**: Node.js & Express  
+- **Audio Processing**: Web Audio API, FFT  
+- **Visualization**: Three.js (WebGL), GLSL shaders  
+- **Download Helpers**:  
+  - `spotifyToMP3.js`  
+  - `youtubeToMP3.js`  
+- **Containerization**: Docker & Docker Compose  
+- **Env Management**: `.env` for API keys & ports  
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) v16+  
+- [npm](https://npmjs.com/) or [yarn](https://yarnpkg.com/)  
+- **Optional**: Docker & Docker Compose  
+
+### Local Install
+
+1. **Clone** the repo  
+   ```bash
+   git clone https://github.com/your-org/Audionyx.git
+   cd Audionyx
